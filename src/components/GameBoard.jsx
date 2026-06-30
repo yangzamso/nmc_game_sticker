@@ -130,7 +130,8 @@ export function GameBoard() {
   return (
     <div className={styles.board} style={{ '--bg': bgColor }}>
 
-      {/* 스테이지 50% */}
+      {/* 스테이지 영역 */}
+      <div className={styles.stageWrap}>
       <div
         ref={stageRef}
         className={styles.stage}
@@ -189,6 +190,7 @@ export function GameBoard() {
             벗기기
           </button>
         )}
+      </div>
       </div>
 
       {/* 패널 */}

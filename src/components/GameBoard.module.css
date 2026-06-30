@@ -2,19 +2,32 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background: var(--bg, #ffffff);
+  background: #ebebeb;
 }
 
-/* 스테이지 — 50vh */
-.stage {
+/* 스테이지 외곽 — 회색 여백 영역 */
+.stageWrap {
   height: 60dvh;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  background: inherit;
+  background: #ebebeb;
+  padding: 14px 16px;
   touch-action: none;
+}
+
+/* 실제 캔버스 — 둥근 사각형 */
+.stage {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: var(--bg, #ffffff);
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
   overflow: hidden;
 }
 
@@ -41,8 +54,7 @@
 .panel {
   height: 40dvh;
   flex-shrink: 0;
-  background: #fff;
-  border-top: 2px solid #e5e5e5;
+  background: #ebebeb;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -55,7 +67,7 @@
 .sectionTitle {
   font-size: 13px;
   font-weight: 700;
-  color: #333;
+  color: #555;
   margin-bottom: 8px;
 }
 
@@ -83,7 +95,7 @@
   padding: 6px;
   cursor: pointer;
   position: relative;
-  background: #fafafa;
+  background: #ffffff;
   transition: border-color 0.15s;
   touch-action: manipulation;
 }
