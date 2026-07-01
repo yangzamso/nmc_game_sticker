@@ -124,17 +124,17 @@ export function GameBoard() {
   }, [bgColor, saving])
 
   return (
-    <div className={styles.board}
-      style={bgImage
-        ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-        : bgColor
-          ? { background: bgColor }
-          : undefined
-      }
-    >
+    <div className={styles.board}>
 
       {/* 스테이지 영역 */}
-      <div className={styles.stageWrap}>
+      <div className={styles.stageWrap}
+        style={bgImage
+          ? { background: `url('/canvase.png') center / contain no-repeat, url(${bgImage}) center / cover` }
+          : bgColor
+            ? { background: `url('/canvase.png') center / contain no-repeat, ${bgColor}` }
+            : undefined
+        }
+      >
         <div
           ref={stageRef}
           className={styles.stage}
