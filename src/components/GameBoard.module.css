@@ -211,10 +211,10 @@
 .hidden { visibility: hidden; }
 
 /* ── 프린트 오버레이 ── */
-/* 슬롯에서 아래로 종이가 나오는 효과 */
+/* 슬롯에서 카드가 물리적으로 밀려나오는 효과 */
 @keyframes printOut {
-  from { clip-path: inset(0 0 100% 0); }
-  to   { clip-path: inset(0 0 0% 0); }
+  from { transform: translateY(-96%); }
+  to   { transform: translateY(0); }
 }
 
 .printOverlay {
@@ -260,7 +260,7 @@
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
   cursor: pointer;
   z-index: 2;
-  animation: printOut 2.8s linear both;
+  animation: printOut 3s linear both;
 }
 
 .printHint {
