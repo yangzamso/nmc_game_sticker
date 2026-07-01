@@ -8,10 +8,10 @@
 /* 스테이지 외곽 — canvase.png 배경 */
 .stageWrap {
   flex-shrink: 0;
-  width: 100%;
+  width: 120%;
   aspect-ratio: 1123 / 1401;
-  max-height: 62dvh;
-  margin: 0 auto;
+  max-height: 74dvh;
+  margin: 0 -10%;
   position: relative;
   background: url('/canvase.png') center / contain no-repeat;
   touch-action: none;
