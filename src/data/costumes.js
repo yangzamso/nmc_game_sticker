@@ -29,7 +29,7 @@ export const BACKGROUNDS = [
   { id: 'bg_gray',     label: '그레이',  color: '#f0f0f0' },
 ]
 
-export const CHAR_DISPLAY_W = 350
+export const CHAR_DISPLAY_W = 250
 const charNatW = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
 const charNatH = CHARACTER_CROP.y2 - CHARACTER_CROP.y1
 export const SCALE = CHAR_DISPLAY_W / charNatW
