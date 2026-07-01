@@ -188,7 +188,7 @@ export function GameBoard() {
               style={{
                 position: 'absolute', left: pp.x, top: pp.y,
                 transform: 'translate(-50%,-50%)',
-                width: Math.round(80 * charScale / SCALE * COSTUME_SCALE_FACTOR),
+                width: Math.round(80 * charScale / SCALE * COSTUME_SCALE_FACTOR * (prop.propScale ?? 1)),
                 objectFit: 'contain',
                 cursor: propDrag?.propId === pp.propId ? 'grabbing' : 'grab',
                 touchAction: 'none', userSelect: 'none', zIndex: 20,

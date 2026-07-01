@@ -11,8 +11,8 @@ export const COSTUMES = [
 
 export const PROPS = [
   { id: 'item_sword',      name: '장난감검',  image: '/items/item_sword.png' },
-  { id: 'item_rose',       name: '장미',      image: '/items/item_rose.png' },
-  { id: 'item_hat',        name: '모자',      image: '/items/item_hat.png' },
+  { id: 'item_rose',       name: '장미',      image: '/items/item_rose.png',       propScale: 1.3 },
+  { id: 'item_hat',        name: '모자',      image: '/items/item_hat.png',        propScale: 1.3 },
   { id: 'item_chupachups', name: '츄팝츕스',  image: '/items/item_chupachups.png' },
   { id: 'item_magnifier',  name: '돋보기',    image: '/items/item_magnifier.png' },
 ]
