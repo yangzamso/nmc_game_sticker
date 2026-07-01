@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
 import { COSTUMES, PROPS, BACKGROUNDS, CHARACTER_CROP, CHAR_DISPLAY_W, CHAR_DISPLAY_H, SCALE, getCostumeDisplaySize, COSTUME_SCALE_FACTOR } from '../data/costumes'
 import { useGameStore } from '../store/gameStore'
-import { savePhotoCard } from '../utils/savePhotoCard'
+import { capturePhotoCard, downloadPhotoCard } from '../utils/savePhotoCard'
 import styles from './GameBoard.module.css'
 
 function useCharSize() {
@@ -40,6 +40,7 @@ export function GameBoard() {
 
   const [placed, setPlaced] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [printData, setPrintData] = useState(null)   // 프린트 오버레이용 dataUrl
   const [placedProps, setPlacedProps] = useState([])  // 최대 2개
   const [stageDrag, setStageDrag] = useState(null)
   const [propDrag, setPropDrag] = useState(null)      // { propId, offsetX, offsetY }
@@ -117,11 +118,17 @@ export function GameBoard() {
     if (!stageRef.current || saving) return
     setSaving(true)
     try {
-      await savePhotoCard(stageRef.current, bgColor, bgImage)
+      const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage)
+      setPrintData(dataUrl)
     } finally {
       setSaving(false)
     }
-  }, [bgColor, saving])
+  }, [bgColor, bgImage, saving])
+
+  const onPrintDownload = useCallback(() => {
+    if (printData) downloadPhotoCard(printData)
+    setPrintData(null)
+  }, [printData])
 
   return (
     <div className={styles.board}>
@@ -269,6 +276,22 @@ export function GameBoard() {
         </div>
 
       </div>
+
+      {/* 프린트 애니메이션 오버레이 */}
+      {printData && (
+        <div className={styles.printOverlay} onClick={() => setPrintData(null)}>
+          <div className={styles.printScene} onClick={(e) => e.stopPropagation()}>
+            <img
+              src={printData}
+              alt="포토카드"
+              className={styles.printCard}
+              onClick={onPrintDownload}
+            />
+            <img src="/printer.png" alt="프린터" className={styles.printerImg} />
+            <p className={styles.printHint}>탭해서 저장</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

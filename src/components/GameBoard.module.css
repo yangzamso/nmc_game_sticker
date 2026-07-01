@@ -209,3 +209,55 @@
 .saveBtn:disabled { opacity: 0.55; cursor: default; }
 
 .hidden { visibility: hidden; }
+
+/* ── 프린트 오버레이 ── */
+@keyframes printOut {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.printOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 200;
+  padding-bottom: 0;
+}
+
+.printScene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+  padding-bottom: 24px;
+}
+
+.printCard {
+  width: 72%;
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  cursor: pointer;
+  animation: printOut 0.6s cubic-bezier(0.22,1,0.36,1) both;
+  z-index: 2;
+  position: relative;
+}
+
+.printerImg {
+  width: 86%;
+  margin-top: -12px;
+  z-index: 3;
+  position: relative;
+  pointer-events: none;
+}
+
+.printHint {
+  margin-top: 14px;
+  color: #fff;
+  font-size: 13px;
+  opacity: 0.8;
+  letter-spacing: 0.3px;
+}
