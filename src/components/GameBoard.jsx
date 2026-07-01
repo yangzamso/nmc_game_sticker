@@ -129,9 +129,9 @@ export function GameBoard() {
       {/* 스테이지 영역 */}
       <div className={styles.stageWrap}
         style={bgImage
-          ? { background: `url('/canvase.png') center / contain no-repeat, url(${bgImage}) center / cover` }
+          ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
           : bgColor
-            ? { background: `url('/canvase.png') center / contain no-repeat, ${bgColor}` }
+            ? { background: bgColor }
             : undefined
         }
       >
