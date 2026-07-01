@@ -12,7 +12,7 @@ function useCharSize() {
   useEffect(() => {
     const calc = () => {
       const stageH = window.innerHeight * 0.60 * 0.80
-      const stageW = window.innerWidth * 0.80
+      const stageW = window.innerWidth * 0.55
       const s = Math.min(stageW / CHAR_NAT_W, stageH / CHAR_NAT_H)
       setSize({ w: Math.round(CHAR_NAT_W * s), h: Math.round(CHAR_NAT_H * s), scale: s })
     }
