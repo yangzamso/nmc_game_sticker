@@ -128,9 +128,9 @@ export function GameBoard() {
 
       {/* 스테이지 영역 */}
       <div className={styles.stageWrap}>
-      <div
-        ref={stageRef}
-        className={styles.stage}
+        <div
+          ref={stageRef}
+          className={styles.stage}
         style={bgImage
           ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
           : { background: bgColor }
@@ -140,7 +140,7 @@ export function GameBoard() {
         onPointerLeave={onStagePointerUp}
       >
         {/* 캐릭터 */}
-        <div className={styles.character} style={{ width: charW, height: charH, marginTop: 50 }}>
+        <div className={styles.character} style={{ width: charW, height: charH }}>
           <img src="/items/character_base.png" alt="닛몰캐쉬"
             style={{ width: charW, height: charH, objectFit: 'contain', display: 'block' }} />
         </div>
@@ -182,6 +182,9 @@ export function GameBoard() {
           )
         })}
 
+        {/* 캔버스 오버레이 (프레임) */}
+        <img src="/canvase-overlay.png" alt="" className={styles.canvasOverlay} />
+
         {/* 벗기기 버튼 */}
         {placed && (
           <button
@@ -191,7 +194,8 @@ export function GameBoard() {
             벗기기
           </button>
         )}
-      </div>
+        </div>
+        <img src="/canvase-overlay.png" className={styles.stageOverlay} alt="" />
       </div>
 
       {/* 패널 */}
