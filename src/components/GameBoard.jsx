@@ -155,7 +155,7 @@ export function GameBoard() {
         onPointerLeave={onStagePointerUp}
       >
         {/* 캐릭터 */}
-        <div className={styles.character} style={{ width: charW, height: charH, marginTop: 20 }}>
+        <div className={styles.character} style={{ width: charW, height: charH, marginTop: 60 }}>
           <img src="/items/character_base.png" alt="닛몰캐쉬"
             style={{ width: charW, height: charH, objectFit: 'contain', display: 'block' }} />
         </div>
