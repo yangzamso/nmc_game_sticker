@@ -126,6 +126,11 @@ interior_holes = {
     "strawberry": [(250, 350)],
 }
 
+# 특정 사각형 영역 강제 투명 처리
+erase_regions = {
+    "wolf": [(60, 375, 100, 415), (325, 365, 360, 415)],  # 양쪽 손 끝 둥근 부분
+}
+
 src_img = Image.open(SRC)
 for name, box in items.items():
     cropped = src_img.crop(box)
@@ -133,6 +138,14 @@ for name, box in items.items():
     if name in interior_holes:
         for sx, sy in interior_holes[name]:
             result = floodfill_from_point(result, sx, sy)
+    if name in erase_regions:
+        pixels = result.load()
+        rw, rh = result.size
+        for (ex0, ey0, ex1, ey1) in erase_regions[name]:
+            for ex in range(ex0, ex1+1):
+                for ey in range(ey0, ey1+1):
+                    if 0 <= ex < rw and 0 <= ey < rh:
+                        pixels[ex, ey] = (0, 0, 0, 0)
     if name in lens_configs:
         for cfg in lens_configs[name]:
             result = make_lens_transparent(result, cfg['color_fn'], cfg['alpha'], cfg.get('region'))
