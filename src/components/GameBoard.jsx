@@ -281,13 +281,15 @@ export function GameBoard() {
       {printData && (
         <div className={styles.printOverlay} onClick={() => setPrintData(null)}>
           <div className={styles.printScene} onClick={(e) => e.stopPropagation()}>
-            <img src="/printer.png" alt="프린터" className={styles.printerImg} />
-            <img
-              src={printData}
-              alt="포토카드"
-              className={styles.printCard}
-              onClick={onPrintDownload}
-            />
+            <div className={styles.printerWrap}>
+              <img src="/printer.png" alt="프린터" className={styles.printerImg} />
+              <img
+                src={printData}
+                alt="포토카드"
+                className={styles.printCard}
+                onClick={onPrintDownload}
+              />
+            </div>
             <p className={styles.printHint}>탭해서 저장</p>
           </div>
         </div>

@@ -211,20 +211,21 @@
 .hidden { visibility: hidden; }
 
 /* ── 프린트 오버레이 ── */
+/* 슬롯에서 아래로 종이가 나오는 효과 */
 @keyframes printOut {
-  from { transform: translateY(-80%); }
-  to   { transform: translateY(0); }
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0 0 0% 0); }
 }
 
 .printOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.65);
   display: flex;
   align-items: flex-start;
   justify-content: center;
   z-index: 200;
-  padding-top: 32px;
+  padding-top: 40px;
 }
 
 .printScene {
@@ -235,26 +236,35 @@
   max-width: 360px;
 }
 
-.printerImg {
-  width: 86%;
-  z-index: 3;
+/* 프린터 + 카드를 겹치는 컨테이너 */
+.printerWrap {
   position: relative;
+  width: 86%;
+}
+
+.printerImg {
+  width: 100%;
+  display: block;
+  position: relative;
+  z-index: 3;
   pointer-events: none;
 }
 
+/* 카드: 슬롯 위치(top 41.2%)에서 슬롯 너비(22.5%~77.3%)에 맞춰 배치 */
 .printCard {
-  width: 72%;
-  border-radius: 6px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  position: absolute;
+  top: 41.2%;
+  left: 22.5%;
+  width: 54.8%;
+  border-radius: 3px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
   cursor: pointer;
-  animation: printOut 2.4s cubic-bezier(0.4, 0, 0.2, 1) both;
   z-index: 2;
-  position: relative;
-  margin-top: -6px;
+  animation: printOut 2.8s linear both;
 }
 
 .printHint {
-  margin-top: 20px;
+  margin-top: 16px;
   color: #fff;
   font-size: 13px;
   opacity: 0.8;
