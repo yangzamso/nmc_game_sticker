@@ -281,9 +281,9 @@ export function GameBoard() {
       {/* 프린트 애니메이션 오버레이 */}
       {printData && (() => {
         // 프린터 이미지 비율: 265×302
-        const printerW = Math.min(Math.round((stageVisualWidth ?? 160) * 1.25), window.innerWidth - 24)
+        const cardW    = stageVisualWidth ?? 160
+        const printerW = Math.min(Math.round(cardW / 0.6), window.innerWidth - 24)
         const printerH = Math.round(printerW * 302 / 265)
-        const cardW    = stageVisualWidth ?? Math.round(printerW * 0.8)
         const cardH    = Math.round(cardW * 4 / 3)
         // 슬롯 위치 (printer-top.png 기준 72% 지점)
         const slotY    = Math.round(printerH * 0.72)
@@ -303,7 +303,7 @@ export function GameBoard() {
               {/* Layer 3: 커버 배경 — 슬롯 위 영역을 가려 카드가 프린터 안에 있는 느낌 */}
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0,
-                height: slotY, background: '#302d2b', zIndex: 3,
+                height: slotY, background: 'transparent', zIndex: 3,
               }} />
 
               {/* 포토카드 — 슬롯(slotY)에서 나옴, z=2 */}
