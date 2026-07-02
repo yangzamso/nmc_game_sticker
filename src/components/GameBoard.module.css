@@ -221,6 +221,7 @@
 .printOverlay {
   position: fixed;
   inset: 0;
+  overflow: hidden;
   background: #302d2b;
   display: flex;
   flex-direction: column;
@@ -246,6 +247,7 @@
   position: relative;
   z-index: 1;
   flex-shrink: 0;
+  overflow: visible;
 }
 
 .printerImg {

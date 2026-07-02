@@ -285,7 +285,7 @@ export function GameBoard() {
         const SLOT_W_RATIO = 200 / 265
         const SLOT_Y_RATIO = 95 / 302
         // 화면 너비 기준으로 프린터 크기 결정 (stageVisualWidth 기반시 모바일에서 항상 캡에 걸림)
-        const printerW = Math.round(window.innerWidth * 0.92)
+        const printerW = Math.round(window.innerWidth * 1.25)
         const printerH = Math.round(printerW * 302 / 265)
         const cardW    = Math.round(printerW * SLOT_W_RATIO * 0.9)
         const cardH    = Math.round(cardW * 4 / 3)
