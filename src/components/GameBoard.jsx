@@ -43,7 +43,6 @@ export function GameBoard() {
   const [placed, setPlaced] = useState(null)
   const [saving, setSaving] = useState(false)
   const [printData, setPrintData] = useState(null)
-  const [stageVisualWidth, setStageVisualWidth] = useState(null)
   const [placedProps, setPlacedProps] = useState([])  // 최대 2개
   const [stageDrag, setStageDrag] = useState(null)
   const [propDrag, setPropDrag] = useState(null)      // { propId, offsetX, offsetY }
@@ -121,8 +120,6 @@ export function GameBoard() {
     if (!stageRef.current || saving) return
     setSaving(true)
     try {
-      const visualW = stageRef.current.getBoundingClientRect().width
-      setStageVisualWidth(visualW)
       const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage)
       setPrintData(dataUrl)
     } finally {
@@ -279,7 +276,6 @@ export function GameBoard() {
       {printData && (
         <PrintOverlay
           printData={printData}
-          stageVisualWidth={stageVisualWidth}
           boardRef={boardRef}
           onClose={() => setPrintData(null)}
         />

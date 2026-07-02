@@ -15,7 +15,7 @@ function playPrinterSound() {
   else audio.addEventListener('loadedmetadata', start, { once: true })
 }
 
-export function PrintOverlay({ printData, stageVisualWidth, boardRef, onClose }) {
+export function PrintOverlay({ printData, boardRef, onClose }) {
   const [replayKey, setReplayKey] = useState(0)
 
   // 오버레이가 처음 나타날 때 프린트 효과음 재생
@@ -53,11 +53,11 @@ export function PrintOverlay({ printData, stageVisualWidth, boardRef, onClose })
   // 프린터 이미지 비율: 265×302
   // 슬롯 너비 비율: 200/265 ≈ 75.5%  /  슬롯 위치: y=95/302 ≈ 31.5%
   const SLOT_Y_RATIO = 95 / 302
-  // 카드: 스테이지 너비 고정 / 프린터: 카드 대비 독립적으로 크게
-  // 프린터 도형 폭 380px 확대에 맞춰 카드도 비례 확대 (기준 스테이지 폭 405px에서 300px가 되도록 0.74)
-  const cardW    = Math.round((stageVisualWidth ?? 160) * 0.74)
   const printerW = boardRef.current?.getBoundingClientRect().width ?? window.innerWidth
   const printerH = Math.round(printerW * 302 / 265)
+  // 카드: 프린터(printerW)와 같은 기준으로 계산 — 기기별 스테이지 비율 차이와 무관하게
+  // 슬롯(320px)보다 항상 좁게 유지되도록 printerW 대비 비율(0.6276 ≈ 기준폭 478px에서 300px)로 고정
+  const cardW    = Math.round(printerW * 0.6276)
   const cardH    = Math.round(cardW * 4 / 3)
   const slotY    = Math.round(printerH * SLOT_Y_RATIO)
   // 씬 전체 높이 = 슬롯 위치 + 카드 높이
