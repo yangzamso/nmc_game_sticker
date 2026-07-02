@@ -103,7 +103,7 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
 
   // 사진 영역 연한 테두리 — 흰 배경과 자연스럽게 구분
   ctx.strokeStyle = 'rgba(0,0,0,0.10)'
-  ctx.lineWidth   = 2
+  ctx.lineWidth   = 1
   ctx.strokeRect(padH + 1, padTop + 1, sw - 2, sh - 2)
 
   const centerX = cardW / 2
