@@ -285,7 +285,7 @@ export function GameBoard() {
         const SLOT_W_RATIO = 200 / 265
         const SLOT_Y_RATIO = 95 / 302
         // 카드: 스테이지 너비 고정 / 프린터: 카드 대비 독립적으로 크게
-        const cardW    = Math.round((stageVisualWidth ?? 160) * 0.58)
+        const cardW    = Math.round((stageVisualWidth ?? 160) * 0.55)
         const printerW = window.innerWidth
         const printerH = Math.round(printerW * 302 / 265)
         const cardH    = Math.round(cardW * 4 / 3)
@@ -303,8 +303,8 @@ export function GameBoard() {
               <img src="/printer.png" alt=""
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 1, display: 'block' }} />
 
-              {/* Layer 3: 커버 배경 — 슬롯 위 영역을 오버레이 배경색+그레인으로 가림 */}
-              <div className={styles.printCover} style={{ height: slotY }} />
+              {/* Layer 3: 커버 배경 — 화면 상단부터 슬롯 위치까지 전체를 가림 */}
+              <div className={styles.printCover} style={{ height: 88 + slotY }} />
 
               {/* 포토카드 — 슬롯(slotY)에서 나옴, z=2 */}
               <div style={{

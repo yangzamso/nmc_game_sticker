@@ -233,7 +233,7 @@
 
 /* 프린터 상단 커버 — 오버레이 배경색 + 동일 그레인 */
 .printCover {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
