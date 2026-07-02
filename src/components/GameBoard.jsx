@@ -152,48 +152,51 @@ export function GameBoard() {
         onPointerUp={onStagePointerUp}
         onPointerLeave={onStagePointerUp}
       >
-        {/* 캐릭터 */}
-        <div className={styles.character} style={{ width: charW, height: charH }}>
-          <img src="/items/character_base.png" alt="닛몰캐쉬"
-            style={{ width: charW, height: charH, objectFit: 'contain', display: 'block' }} />
+        {/* 캡처 시 전체 콘텐츠 1.2배 스케일 wrapper */}
+        <div className={styles.stageContent}>
+          {/* 캐릭터 */}
+          <div className={styles.character} style={{ width: charW, height: charH }}>
+            <img src="/items/character_base.png" alt="닛몰캐쉬"
+              style={{ width: charW, height: charH, objectFit: 'contain', display: 'block' }} />
+          </div>
+
+          {/* 배치된 의상 */}
+          {placed && placedCostume && (() => {
+            const { w, h } = getCostumeDisplaySize(placedCostume, charScale)
+            return (
+              <img
+                src={placedCostume.image} alt=""
+                onPointerDown={onPlacedPointerDown}
+                style={{
+                  position: 'absolute', left: placed.x, top: placed.y,
+                  transform: 'translate(-50%,-50%)',
+                  width: w, height: h, objectFit: 'fill',
+                  cursor: stageDrag ? 'grabbing' : 'grab',
+                  touchAction: 'none', userSelect: 'none', zIndex: 10,
+                }}
+              />
+            )
+          })()}
+
+          {/* 배치된 소품들 (최대 2개) */}
+          {placedProps.map((pp) => {
+            const prop = PROPS.find((p) => p.id === pp.propId)
+            if (!prop) return null
+            return (
+              <img key={pp.propId} src={prop.image} alt={prop.name}
+                onPointerDown={(e) => onPropPointerDown(e, pp.propId)}
+                style={{
+                  position: 'absolute', left: pp.x, top: pp.y,
+                  transform: `translate(-50%,-50%) rotate(${prop.rotate ?? 0}deg)`,
+                  width: Math.round(80 * charScale / SCALE * COSTUME_SCALE_FACTOR * (prop.propScale ?? 1)),
+                  objectFit: 'contain',
+                  cursor: propDrag?.propId === pp.propId ? 'grabbing' : 'grab',
+                  touchAction: 'none', userSelect: 'none', zIndex: 20,
+                }}
+              />
+            )
+          })}
         </div>
-
-        {/* 배치된 의상 */}
-        {placed && placedCostume && (() => {
-          const { w, h } = getCostumeDisplaySize(placedCostume, charScale)
-          return (
-            <img
-              src={placedCostume.image} alt=""
-              onPointerDown={onPlacedPointerDown}
-              style={{
-                position: 'absolute', left: placed.x, top: placed.y,
-                transform: 'translate(-50%,-50%)',
-                width: w, height: h, objectFit: 'fill',
-                cursor: stageDrag ? 'grabbing' : 'grab',
-                touchAction: 'none', userSelect: 'none', zIndex: 10,
-              }}
-            />
-          )
-        })()}
-
-        {/* 배치된 소품들 (최대 2개) */}
-        {placedProps.map((pp) => {
-          const prop = PROPS.find((p) => p.id === pp.propId)
-          if (!prop) return null
-          return (
-            <img key={pp.propId} src={prop.image} alt={prop.name}
-              onPointerDown={(e) => onPropPointerDown(e, pp.propId)}
-              style={{
-                position: 'absolute', left: pp.x, top: pp.y,
-                transform: `translate(-50%,-50%) rotate(${prop.rotate ?? 0}deg)`,
-                width: Math.round(80 * charScale / SCALE * COSTUME_SCALE_FACTOR * (prop.propScale ?? 1)),
-                objectFit: 'contain',
-                cursor: propDrag?.propId === pp.propId ? 'grabbing' : 'grab',
-                touchAction: 'none', userSelect: 'none', zIndex: 20,
-              }}
-            />
-          )
-        })}
       </div>
 
       {/* 초기화 버튼 */}
