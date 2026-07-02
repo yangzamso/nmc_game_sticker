@@ -121,7 +121,10 @@ export function GameBoard() {
     try {
       const visualW = stageRef.current.getBoundingClientRect().width
       setStageVisualWidth(visualW)
+      // 캡처 직전 캐릭터 1.2배 스케일 적용
+      stageRef.current.dataset.capturing = 'true'
       const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage)
+      delete stageRef.current.dataset.capturing
       setPrintData(dataUrl)
     } finally {
       setSaving(false)
