@@ -10,11 +10,10 @@
 /* 스테이지 외곽 — canvase.png 배경 */
 .bg {
   flex-shrink: 0;
-  width: 100%;
-  max-width: calc(74dvh * 1123 / 1401);
+  width: 130%;
   aspect-ratio: 1123 / 1401;
   max-height: 74dvh;
-  margin: 0 auto;
+  margin: 0 -15%;
   position: relative;
   background: url('/canvase.png') center / contain no-repeat;
   touch-action: none;
@@ -208,6 +207,14 @@
 .saveBtn:disabled { opacity: 0.55; cursor: default; }
 
 .hidden { visibility: hidden; }
+
+@media (min-width: 600px) {
+  .bg {
+    width: 100%;
+    margin: 0 auto;
+    max-width: calc(74dvh * 1123 / 1401);
+  }
+}
 
 /* ── 프린트 오버레이 ── */
 /* 슬롯에서 카드가 물리적으로 밀려나오는 효과 */
