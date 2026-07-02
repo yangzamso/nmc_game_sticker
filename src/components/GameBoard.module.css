@@ -23,10 +23,10 @@
 /* 실제 캔버스 — 카드 구멍 위치에 절대좌표 배치 */
 .stage {
   position: absolute;
-  left: 26.5%;
-  top: 29%;
-  width: 47%;
-  height: 62%;
+  left: 22.5%;
+  top: 27%;
+  width: 54.8%;
+  height: 65%;
   display: flex;
   align-items: center;
   justify-content: center;
