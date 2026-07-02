@@ -18,8 +18,7 @@ export const PROPS = [
 ]
 
 export const BACKGROUNDS = [
-  { id: 'bg_dark',       label: '기본',   color: '#2a2a2a' },
-  { id: 'bg_white',      label: '하얀색', color: '#ffffff' },
+  { id: 'bg_white',      label: '기본',   color: '#ffffff' },
   { id: 'bg_pink_star',  label: '핑크',   image: '/bg-pink-star.jpg' },
   { id: 'bg_sky_check',  label: '하늘',   image: '/bg-sky-check.jpg' },
   { id: 'bg_yellow',     label: '노랑',   image: '/bg-yellow.jpg' },

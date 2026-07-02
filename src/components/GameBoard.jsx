@@ -194,7 +194,7 @@ export function GameBoard() {
       </div>
 
       {/* 초기화 버튼 */}
-      {(placed || placedProps.length > 0 || bgColor !== null || bgImage) && (
+      {(placed || placedProps.length > 0 || bgColor !== '#ffffff' || bgImage) && (
         <button
           className={`${styles.removeBtn} ${saving ? styles.hidden : ''}`}
           onClick={() => { reset(); setPlaced(null); setPlacedProps([]) }}
