@@ -11,9 +11,9 @@
 .stage {
   flex-shrink: 0;
   width: 100%;
-  aspect-ratio: 55 / 85;
+  aspect-ratio: 3 / 4;
   max-height: 60dvh;
-  max-width: calc(60dvh * 55 / 85);
+  max-width: calc(60dvh * 3 / 4);
   margin: 0 auto 8px;
   position: relative;
   display: flex;
@@ -199,6 +199,7 @@
 @media (min-width: 600px) {
   .stage {
     max-height: 60dvh;
+    max-width: calc(60dvh * 3 / 4);
     margin-bottom: 0;
   }
 }
