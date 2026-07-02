@@ -284,8 +284,8 @@ export function GameBoard() {
         // 슬롯 너비 비율: 200/265 ≈ 75.5%  /  슬롯 위치: y=95/302 ≈ 31.5%
         const SLOT_W_RATIO = 200 / 265
         const SLOT_Y_RATIO = 95 / 302
-        const stageW   = stageVisualWidth ?? 160
-        const printerW = Math.min(Math.round(stageW / SLOT_W_RATIO * 1.7), window.innerWidth - 24)
+        // 화면 너비 기준으로 프린터 크기 결정 (stageVisualWidth 기반시 모바일에서 항상 캡에 걸림)
+        const printerW = Math.round(window.innerWidth * 0.92)
         const printerH = Math.round(printerW * 302 / 265)
         const cardW    = Math.round(printerW * SLOT_W_RATIO * 0.9)
         const cardH    = Math.round(cardW * 4 / 3)
