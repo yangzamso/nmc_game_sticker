@@ -280,29 +280,45 @@ export function GameBoard() {
 
       {/* 프린트 애니메이션 오버레이 */}
       {printData && (() => {
-        const rawPrinterW = Math.round((stageVisualWidth ?? 160) / 0.548)
-        const printerW = Math.min(rawPrinterW, window.innerWidth - 24)
-        const printerH = Math.round(printerW * 408 / 612)
-        const cardW = Math.round(printerW * 0.548)
-        // 카드 상단이 프린터 슬롯 위치에서 나오도록 겹침량 설정
-        // printer.png 슬롯이 약 72% 지점 → 카드 top = printerH * 0.72
-        const overlapAmount = Math.round(printerH * 0.28)
+        // 프린터 이미지 비율: 265×302
+        const printerW = Math.min(Math.round((stageVisualWidth ?? 160) * 1.25), window.innerWidth - 24)
+        const printerH = Math.round(printerW * 302 / 265)
+        const cardW    = stageVisualWidth ?? Math.round(printerW * 0.8)
+        const cardH    = Math.round(cardW * 4 / 3)
+        // 슬롯 위치 (printer-top.png 기준 72% 지점)
+        const slotY    = Math.round(printerH * 0.72)
+        // 씬 전체 높이 = 슬롯 위치 + 카드 높이
+        const sceneH   = slotY + cardH
         return (
           <div className={styles.printOverlay} onClick={() => setPrintData(null)}>
-            <div className={styles.printScene} onClick={(e) => e.stopPropagation()}>
-              {/* 프린터 — z-index 높아서 카드 상단을 덮음 */}
-              <div style={{ position: 'relative', zIndex: 3, width: printerW, flexShrink: 0 }}>
-                <img src="/printer.png" alt="프린터" className={styles.printerImg} />
+            <div
+              className={styles.printScene}
+              style={{ position: 'relative', width: printerW, height: sceneH }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Layer 4 (back): printer.png — 카드 뒤에 위치 */}
+              <img src="/printer.png" alt=""
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 1, display: 'block' }} />
+
+              {/* Layer 3: 커버 배경 — 슬롯 위 영역을 가려 카드가 프린터 안에 있는 느낌 */}
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0,
+                height: slotY, background: '#302d2b', zIndex: 3,
+              }} />
+
+              {/* 포토카드 — 슬롯(slotY)에서 나옴, z=2 */}
+              <div style={{
+                position: 'absolute', top: slotY,
+                left: '50%', transform: 'translateX(-50%)',
+                width: cardW, zIndex: 2,
+              }}>
+                <img src={printData} alt="포토카드"
+                  className={styles.printCard} onClick={onPrintDownload} />
               </div>
-              {/* 카드 — 음수 margin으로 프린터와 겹치게, z-index 낮아서 프린터 아래 */}
-              <div style={{ position: 'relative', zIndex: 1, width: cardW, marginTop: -overlapAmount, flexShrink: 0 }}>
-                <img
-                  src={printData}
-                  alt="포토카드"
-                  className={styles.printCard}
-                  onClick={onPrintDownload}
-                />
-              </div>
+
+              {/* Layer 1 (front): printer-top.png — 슬롯 투명 영역으로 카드가 보임 */}
+              <img src="/printer-top.png" alt=""
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 4, display: 'block' }} />
             </div>
             <p className={styles.printHint}>탭해서 저장</p>
           </div>
