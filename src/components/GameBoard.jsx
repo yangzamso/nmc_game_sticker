@@ -1,7 +1,8 @@
-import { useRef, useState, useCallback, useEffect } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import { COSTUMES, PROPS, BACKGROUNDS, CHARACTER_CROP, CHAR_DISPLAY_W, CHAR_DISPLAY_H, SCALE, getCostumeDisplaySize, COSTUME_SCALE_FACTOR } from '../data/costumes'
 import { useGameStore } from '../store/gameStore'
-import { capturePhotoCard, downloadPhotoCard } from '../utils/savePhotoCard'
+import { capturePhotoCard } from '../utils/savePhotoCard'
+import { PrintOverlay } from './PrintOverlay'
 import styles from './GameBoard.module.css'
 
 function useCharSize() {
@@ -33,9 +34,6 @@ function farCorner(stageR) {
   return { x: pick.x + (Math.random() - 0.5) * 30, y: pick.y + (Math.random() - 0.5) * 30 }
 }
 
-// 원본 앞부분 무음(~1.45s)의 절반 지점부터 재생해 무음 체감 시간을 절반으로 줄임
-const PRINT_SOUND_START = 0.725
-
 export function GameBoard() {
   const { equippedId, equip, unequip, bgColor, bgImage, setBg, setBgImage, reset } = useGameStore()
   const stageRef = useRef(null)
@@ -45,7 +43,6 @@ export function GameBoard() {
   const [placed, setPlaced] = useState(null)
   const [saving, setSaving] = useState(false)
   const [printData, setPrintData] = useState(null)
-  const [replayKey, setReplayKey] = useState(0)
   const [stageVisualWidth, setStageVisualWidth] = useState(null)
   const [placedProps, setPlacedProps] = useState([])  // 최대 2개
   const [stageDrag, setStageDrag] = useState(null)
@@ -120,16 +117,6 @@ export function GameBoard() {
 
   const placedCostume = placed ? COSTUMES.find((c) => c.id === placed.costumeId) : null
 
-  const playPrinterSound = useCallback(() => {
-    const audio = new Audio('/printer-audio.mp3')
-    const start = () => {
-      audio.currentTime = PRINT_SOUND_START
-      audio.play().catch(() => {})
-    }
-    if (audio.readyState >= 1) start()
-    else audio.addEventListener('loadedmetadata', start, { once: true })
-  }, [])
-
   const onSave = useCallback(async () => {
     if (!stageRef.current || saving) return
     setSaving(true)
@@ -138,23 +125,10 @@ export function GameBoard() {
       setStageVisualWidth(visualW)
       const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage)
       setPrintData(dataUrl)
-      setReplayKey(0)
-      playPrinterSound()
     } finally {
       setSaving(false)
     }
-  }, [bgColor, bgImage, saving, playPrinterSound])
-
-  const onReplay = useCallback((e) => {
-    e.stopPropagation()
-    setReplayKey((k) => k + 1)
-    playPrinterSound()
-  }, [playPrinterSound])
-
-  const onPrintDownload = useCallback(() => {
-    if (printData) downloadPhotoCard(printData)
-    setPrintData(null)
-  }, [printData])
+  }, [bgColor, bgImage, saving])
 
   return (
     <div ref={boardRef} className={styles.board}
@@ -295,64 +269,21 @@ export function GameBoard() {
 
         <div className={styles.saveSection}>
           <button className={styles.saveBtn} disabled={saving} onClick={onSave}>
-            {saving ? '저장 중...' : '📸 저장!'}
+            {saving ? '인쇄 중...' : '📸 인쇄!'}
           </button>
         </div>
 
       </div>
 
       {/* 프린트 애니메이션 오버레이 */}
-      {printData && (() => {
-        // 프린터 이미지 비율: 265×302
-        // 슬롯 너비 비율: 200/265 ≈ 75.5%  /  슬롯 위치: y=95/302 ≈ 31.5%
-        const SLOT_W_RATIO = 200 / 265
-        const SLOT_Y_RATIO = 95 / 302
-        // 카드: 스테이지 너비 고정 / 프린터: 카드 대비 독립적으로 크게
-        const cardW    = Math.round((stageVisualWidth ?? 160) * 0.55)
-        const printerW = boardRef.current?.getBoundingClientRect().width ?? window.innerWidth
-        const printerH = Math.round(printerW * 302 / 265)
-        const cardH    = Math.round(cardW * 4 / 3)
-        const slotY    = Math.round(printerH * SLOT_Y_RATIO)
-        // 씬 전체 높이 = 슬롯 위치 + 카드 높이
-        const sceneH   = slotY + cardH
-        return (
-          <div className={styles.printOverlay} onClick={() => setPrintData(null)}>
-            <div
-              className={styles.printScene}
-              style={{ position: 'relative', width: printerW, height: sceneH }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Layer 4 (back): printer.png — 카드 뒤에 위치 */}
-              <img src="/printer.png" alt=""
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 1, display: 'block' }} />
-
-              {/* Layer 3: 커버 배경 — 화면 상단부터 슬롯 위치까지 전체를 가림 */}
-              <div className={styles.printCover} style={{ height: 88 + slotY }} />
-
-              {/* 포토카드 — 슬롯(slotY)에서 나옴, z=2 */}
-              <div style={{
-                position: 'absolute', top: slotY,
-                left: '50%', transform: 'translateX(-50%)',
-                width: cardW, zIndex: 2,
-              }}>
-                <img key={replayKey} src={printData} alt="포토카드"
-                  className={styles.printCard} onClick={onPrintDownload} />
-              </div>
-
-              {/* Layer 1 (front): printer-top.png — 슬롯 투명 영역으로 카드가 보임 */}
-              <img src="/printer-top.png" alt=""
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 4, display: 'block' }} />
-            </div>
-            <button type="button" className={styles.replayBtn} onClick={onReplay} aria-label="애니메이션 다시 재생">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 12a9 9 0 1 1 3 6.7" />
-                <path d="M3 16v-4h4" />
-              </svg>
-            </button>
-            <p className={styles.printHint}>탭해서 저장</p>
-          </div>
-        )
-      })()}
+      {printData && (
+        <PrintOverlay
+          printData={printData}
+          stageVisualWidth={stageVisualWidth}
+          boardRef={boardRef}
+          onClose={() => setPrintData(null)}
+        />
+      )}
     </div>
   )
 }

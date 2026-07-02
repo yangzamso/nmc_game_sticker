@@ -1,0 +1,32 @@
+<svg viewBox="0 0 265 302" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="body" x1="0" y1="72" x2="0" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#eaeaea" />
+      <stop offset="0.15" stop-color="#dedede" />
+      <stop offset="0.5" stop-color="#d9d9d9" />
+      <stop offset="0.85" stop-color="#d6d6d6" />
+      <stop offset="1" stop-color="#d1d1d1" />
+    </linearGradient>
+    <linearGradient id="slot" x1="0" y1="87" x2="0" y2="106" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d8d8d8" />
+      <stop offset="0.16" stop-color="#c9c9c9" />
+      <stop offset="0.32" stop-color="#1e1e1e" />
+      <stop offset="0.47" stop-color="#121212" />
+      <stop offset="0.63" stop-color="#3a3a3a" />
+      <stop offset="0.68" stop-color="#5d5d5d" />
+      <stop offset="0.74" stop-color="#dadada" />
+      <stop offset="0.79" stop-color="#efefef" />
+      <stop offset="0.86" stop-color="#dedede" />
+      <stop offset="1" stop-color="#d8d8d8" />
+    </linearGradient>
+    <!-- 상단 캡: 둥근 위쪽 모서리 + y=96(슬롯 진입부)에서 평평하게 잘림 (원본 printer-top.png의 투명 경계와 동일) -->
+    <clipPath id="topCap">
+      <path d="M40,72 L223,72 A9,9 0 0 1 232,81 L232,96 L31,96 L31,81 A9,9 0 0 1 40,72 Z" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#topCap)">
+    <rect x="31" y="72" width="201" height="46" rx="9" ry="9" fill="url(#body)" />
+    <rect x="60" y="87" width="144" height="19" rx="6" ry="6" fill="url(#slot)" />
+  </g>
+</svg>

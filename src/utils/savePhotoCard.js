@@ -34,7 +34,7 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
 
   const padH   = Math.round(sw * 0.06)
   const padTop  = Math.round(sw * 0.14)
-  const padBot  = Math.round(sw * 0.20)
+  const padBot  = Math.round(sw * 0.30)
   const cardW   = sw + padH * 2
   const cardH   = sh + padTop + padBot
 
@@ -107,11 +107,16 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   ctx.lineWidth   = 1
   ctx.strokeRect(padH + 0.5, padTop + 0.5, sw - 1, sh - 1)
 
+  // 글자 크기는 여백 확장 전 비율(0.20) 기준으로 고정 — 흰 영역만 넓어지고 글자 크기는 그대로
+  const captionFontSize = Math.round(sw * 0.20 * 0.28 * 2)
   const centerX = cardW / 2
-  const textY   = sh + padTop + padBot * 0.45
-  ctx.textAlign  = 'center'
+  const textY   = sh + padTop + padBot / 2
+  ctx.textAlign    = 'center'
+  ctx.textBaseline = 'middle'
   ctx.fillStyle  = '#222'
-  ctx.font       = `bold ${Math.round(padBot * 0.28)}px "Apple SD Gothic Neo", "Noto Sans KR", sans-serif`
+  // 캔버스는 @font-face 로드를 자동으로 기다리지 않으므로 그리기 전에 명시적으로 로드
+  await document.fonts.load(`${captionFontSize}px OngleipEoyeonce`).catch(() => {})
+  ctx.font = `${captionFontSize}px OngleipEoyeonce, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif`
   ctx.fillText('2026 닛몰캐쉬 생일축하해!', centerX, textY)
 
   return canvas.toDataURL('image/png')
