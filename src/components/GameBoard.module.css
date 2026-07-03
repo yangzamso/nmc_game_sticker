@@ -10,14 +10,14 @@
   background-position: center;
 }
 
-/* 코디(옷 갈아입기) 스테이지 — 1:1 정사각형. 너비를 뷰포트에 1:1로 맞추고 높이는 비율로만 계산
+/* 코디(옷 갈아입기) 스테이지 — 4:5 비율. 너비를 뷰포트에 1:1로 맞추고 높이는 비율로만 계산
    (svh 기반 max-height/max-width 제거 — 카카오톡 인앱 브라우저 주소창 토글로 뷰포트 높이가
    바뀌어도 스테이지 픽셀 크기 자체가 흔들리지 않도록 함)
    * 인쇄되는 포토카드 자체의 3:4 비율과는 별개 — 인쇄 비율은 savePhotoCard.js에서 결정 */
 .stage {
   flex-shrink: 0;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 5;
   margin: 0 auto 8px;
   position: relative;
   display: flex;
@@ -35,7 +35,7 @@
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 27%;
+  width: 40%;
   z-index: 30;
   pointer-events: none;
   user-select: none;
@@ -50,8 +50,9 @@
 .character {
   position: absolute;
   left: 50%;
-  /* 로고 하단(top:10px + 로고높이 = 스테이지 폭의 약 13.48%)과 스테이지 바닥 사이의 정중앙 */
-  top: calc(56.74% + 5px);
+  /* 스테이지가 4:5(높이 = 폭×1.25)로 바뀌어 % 기준(스테이지 높이)이 폭과 달라졌으므로,
+     로고 하단(스테이지 폭 기준)~스테이지 바닥 정중앙 + 20px를 스테이지 높이 기준 %로 환산 */
+  top: calc(57.99% + 25px);
   transform: translate(-50%, -50%);
   z-index: 10;
   filter:

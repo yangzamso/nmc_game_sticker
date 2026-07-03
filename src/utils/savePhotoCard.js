@@ -139,7 +139,7 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     img.src = '/logo-1.png'
   })
   const logoMargin = Math.round(sw * 0.04)
-  const logoW = logo ? Math.round(sw * 0.30) : 0
+  const logoW = logo ? Math.round(sw * 0.40) : 0
   const logoH = logo ? Math.round(logoW * logo.naturalHeight / logo.naturalWidth) : 0
   // 로고 하단(padTop 기준 상대좌표) ~ 사진 하단 사이의 정중앙에 캐릭터를 배치.
   // 의상에 따라 캐릭터 높이(scaledH)가 달라져도 항상 이 구간의 중앙에 오도록 매번 재계산됨
