@@ -82,12 +82,15 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
 
   const sw = captured.width
   const sh = captured.height
+  // 사진 영역은 코디 스테이지(1:1)의 실제 캡처 비율과 무관하게 항상 3:4 고정
+  // — 코디 편집 화면 모양이 바뀌어도 인쇄되는 포토카드 비율은 흔들리지 않도록 분리
+  const photoH = Math.round(sw * 4 / 3)
 
   const padH   = Math.round(sw * 0.06)
   const padTop  = Math.round(sw * 0.14)
   const padBot  = Math.round(sw * 0.30)
   const cardW   = sw + padH * 2
-  const cardH   = sh + padTop + padBot
+  const cardH   = photoH + padTop + padBot
 
   const canvas = document.createElement('canvas')
   canvas.width  = cardW
@@ -109,10 +112,10 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
       img.onload = () => {
         const scale = sw / img.naturalWidth
         const scaledH = img.naturalHeight * scale
-        const drawY = padTop + (sh - scaledH) / 2
+        const drawY = padTop + (photoH - scaledH) / 2
         ctx.save()
         ctx.beginPath()
-        ctx.rect(padH, padTop, sw, sh)
+        ctx.rect(padH, padTop, sw, photoH)
         ctx.clip()
         ctx.drawImage(img, padH, drawY, sw, scaledH)
         ctx.restore()
@@ -124,7 +127,7 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     })
   } else if (bgColor) {
     ctx.fillStyle = bgColor
-    ctx.fillRect(padH, padTop, sw, sh)
+    ctx.fillRect(padH, padTop, sw, photoH)
     bgBrightness = luminance(...hexToRgb(bgColor))
   }
 
@@ -138,16 +141,16 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     srcX = bounds.x; srcY = bounds.y; srcW = bounds.w; srcH = bounds.h
     scaledW = Math.round(srcW * CHAR_SCALE)
     scaledH = Math.round(srcH * CHAR_SCALE)
-    // 카드 스테이지 영역 중앙에 배치
+    // 카드 사진 영역(고정 3:4) 중앙에 배치
     drawX = padH + Math.round((sw - scaledW) / 2)
-    drawY = padTop + Math.round((sh - scaledH) / 2)
+    drawY = padTop + Math.round((photoH - scaledH) / 2)
   } else {
     // 캐릭터 없을 때 fallback
     srcX = 0; srcY = 0; srcW = sw; srcH = sh
     scaledW = Math.round(sw * CHAR_SCALE)
     scaledH = Math.round(sh * CHAR_SCALE)
     drawX = padH - Math.round((scaledW - sw) / 2)
-    drawY = padTop - Math.round((scaledH - sh) / 2)
+    drawY = padTop + Math.round((photoH - scaledH) / 2)
   }
 
   // 아웃그로우 — 흰색 shadow 여러 단계로 캐릭터 윤곽 따라 발광
@@ -180,12 +183,12 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   // 사진 영역 연한 회색 테두리 — 흰/색 배경 모두와 자연스럽게 구분
   ctx.strokeStyle = 'rgba(0,0,0,0.15)'
   ctx.lineWidth   = 1
-  ctx.strokeRect(padH + 0.5, padTop + 0.5, sw - 1, sh - 1)
+  ctx.strokeRect(padH + 0.5, padTop + 0.5, sw - 1, photoH - 1)
 
   // 글자 크기는 여백 확장 전 비율(0.20) 기준으로 고정 — 흰 영역만 넓어지고 글자 크기는 그대로
   const captionFontSize = Math.round(sw * 0.20 * 0.28 * 2)
   const centerX = cardW / 2
-  const textY   = sh + padTop + padBot / 2
+  const textY   = photoH + padTop + padBot / 2
   ctx.textAlign    = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillStyle  = '#222'
