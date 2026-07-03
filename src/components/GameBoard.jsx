@@ -46,6 +46,7 @@ export function GameBoard() {
   const { equippedId, equip, unequip, bgColor, bgImage, setBg, setBgImage, reset } = useGameStore()
   const stageRef = useRef(null)
   const boardRef = useRef(null)
+  const stageLogoRef = useRef(null)
 
   const [placed, setPlaced] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -140,10 +141,13 @@ export function GameBoard() {
   const onSave = useCallback(async () => {
     if (!stageRef.current || saving) return
     setSaving(true)
+    // 코디 화면 로고는 편집 중에만 보이는 워터마크라 캡처(포토카드 출력)에는 포함하지 않음
+    if (stageLogoRef.current) stageLogoRef.current.style.display = 'none'
     try {
       const dataUrl = await capturePhotoCard(stageRef.current, bgColor, bgImage)
       setPrintData(dataUrl)
     } finally {
+      if (stageLogoRef.current) stageLogoRef.current.style.display = ''
       setSaving(false)
     }
   }, [bgColor, bgImage, saving])
@@ -164,6 +168,10 @@ export function GameBoard() {
         onPointerUp={onStagePointerUp}
         onPointerLeave={onStagePointerUp}
       >
+        {/* 코디 영역 로고 — 좌측 상단, 편집 중에만 노출(캡처 시 onSave에서 숨김) */}
+        <img ref={stageLogoRef} src="/logo.png" alt="NEED MORE CASH — 2026 HBD CAFE"
+          className={styles.stageLogo} draggable={false} />
+
         {/* 캡처 시 전체 콘텐츠 1.2배 스케일 wrapper */}
         <div className={styles.stageContent}>
           {/* 캐릭터 */}

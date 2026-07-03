@@ -27,6 +27,17 @@
   touch-action: none;
 }
 
+/* 코디 영역 로고 — 좌측 상단 워터마크 */
+.stageLogo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 24%;
+  z-index: 30;
+  pointer-events: none;
+  user-select: none;
+}
+
 .stageContent {
   position: absolute;
   inset: 0;
