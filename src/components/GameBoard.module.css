@@ -10,13 +10,13 @@
   background-position: center;
 }
 
-/* 포토카드 스테이지 — 5.5×8.5cm 비율, 패널 위 빈 공간을 채움 */
+/* 포토카드 스테이지 — 5.5×8.5cm(3:4) 비율. 너비를 뷰포트에 1:1로 맞추고 높이는 비율로만 계산
+   (svh 기반 max-height/max-width 제거 — 카카오톡 인앱 브라우저 주소창 토글로 뷰포트 높이가
+   바뀌어도 스테이지 픽셀 크기 자체가 흔들리지 않도록 함) */
 .stage {
   flex-shrink: 0;
   width: 100%;
   aspect-ratio: 3 / 4;
-  max-height: 60svh;
-  max-width: calc(60svh * 3 / 4);
   margin: 0 auto 8px;
   position: relative;
   display: flex;
@@ -33,7 +33,7 @@
   position: absolute;
   top: 20px;
   left: 5px;
-  width: 25%;
+  width: 27%;
   z-index: 30;
   pointer-events: none;
   user-select: none;
