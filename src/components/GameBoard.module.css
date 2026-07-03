@@ -50,7 +50,8 @@
 .character {
   position: absolute;
   left: 50%;
-  top: calc(50% + 60px);
+  /* 로고 하단(top:10px + 로고높이 = 스테이지 폭의 약 13.48%)과 스테이지 바닥 사이의 정중앙 */
+  top: calc(56.74% + 5px);
   transform: translate(-50%, -50%);
   z-index: 10;
   filter:
