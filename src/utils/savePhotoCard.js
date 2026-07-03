@@ -131,8 +131,7 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     bgBrightness = luminance(...hexToRgb(bgColor))
   }
 
-  // 사진 상단 중앙 로고 워터마크 — 사진 폭의 22%. 캐릭터보다 먼저 로드해서
-  // 캐릭터 위치를 로고 높이만큼 아래로 밀어낼 때 사용
+  // 사진 상단 중앙 로고 워터마크 — 사진 폭의 30%
   const logo = await new Promise((resolve) => {
     const img = new Image()
     img.onload = () => resolve(img)
@@ -142,7 +141,10 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   const logoMargin = Math.round(sw * 0.04)
   const logoW = logo ? Math.round(sw * 0.30) : 0
   const logoH = logo ? Math.round(logoW * logo.naturalHeight / logo.naturalWidth) : 0
-  const charOffsetY = (logo ? logoH : 0) - 20
+  // 로고 하단(padTop 기준 상대좌표) ~ 사진 하단 사이의 정중앙에 캐릭터를 배치.
+  // 의상에 따라 캐릭터 높이(scaledH)가 달라져도 항상 이 구간의 중앙에 오도록 매번 재계산됨
+  const logoBottomY = logo ? logoMargin + logoH : 0
+  const charAreaCenterY = (logoBottomY + photoH) / 2
 
   // 캐릭터 실제 픽셀 bounding box 계산 → 의상 포함 실제 높이/너비 기준으로 중앙 배치
   const bounds = getNonTransparentBounds(captured)
@@ -154,16 +156,16 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     srcX = bounds.x; srcY = bounds.y; srcW = bounds.w; srcH = bounds.h
     scaledW = Math.round(srcW * CHAR_SCALE)
     scaledH = Math.round(srcH * CHAR_SCALE)
-    // 카드 사진 영역(고정 3:4) 중앙에 배치, 로고 높이만큼 아래로 이동
+    // 로고 하단 ~ 사진 하단 구간의 정중앙에 배치 (카드 폭 기준 가운데 정렬)
     drawX = padH + Math.round((sw - scaledW) / 2)
-    drawY = padTop + Math.round((photoH - scaledH) / 2) + charOffsetY
+    drawY = padTop + Math.round(charAreaCenterY - scaledH / 2)
   } else {
     // 캐릭터 없을 때 fallback
     srcX = 0; srcY = 0; srcW = sw; srcH = sh
     scaledW = Math.round(sw * CHAR_SCALE)
     scaledH = Math.round(sh * CHAR_SCALE)
     drawX = padH - Math.round((scaledW - sw) / 2)
-    drawY = padTop + Math.round((photoH - scaledH) / 2) + charOffsetY
+    drawY = padTop + Math.round(charAreaCenterY - scaledH / 2)
   }
 
   // 아웃그로우 — 흰색 shadow 여러 단계로 캐릭터 윤곽 따라 발광
