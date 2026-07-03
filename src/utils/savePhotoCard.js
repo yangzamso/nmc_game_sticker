@@ -144,7 +144,7 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
   // 로고 하단(padTop 기준 상대좌표) ~ 사진 하단 사이의 정중앙에 캐릭터를 배치.
   // 의상에 따라 캐릭터 높이(scaledH)가 달라져도 항상 이 구간의 중앙에 오도록 매번 재계산됨
   const logoBottomY = logo ? logoMargin + logoH : 0
-  const charAreaCenterY = (logoBottomY + photoH) / 2
+  const charAreaCenterY = (logoBottomY + photoH) / 2 - 10
 
   // 캐릭터 실제 픽셀 bounding box 계산 → 의상 포함 실제 높이/너비 기준으로 중앙 배치
   const bounds = getNonTransparentBounds(captured)
