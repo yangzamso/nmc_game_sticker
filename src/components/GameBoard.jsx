@@ -157,7 +157,7 @@ export function GameBoard() {
     >
 
       {/* 코디 영역 로고 — 스테이지가 아니라 board 기준 좌측 상단 (화면 비율에 따라 스테이지가 좁아져도 위치 고정) */}
-      <img src="/logo.png" alt="NEED MORE CASH — 2026 HBD CAFE"
+      <img src="/logo-1.png" alt="NEED MORE CASH — 2026 HBD CAFE"
         className={styles.boardLogo} draggable={false} />
 
       {/* 스테이지 (5.5×8.5cm 포토카드 비율) — 배경은 화면 폭 전체에 깔고(.board), 스테이지 자체는 투명하게 유지 */}

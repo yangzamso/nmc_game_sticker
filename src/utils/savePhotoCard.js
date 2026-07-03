@@ -131,6 +131,19 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     bgBrightness = luminance(...hexToRgb(bgColor))
   }
 
+  // 사진 상단 중앙 로고 워터마크 — 사진 폭의 22%. 캐릭터보다 먼저 로드해서
+  // 캐릭터 위치를 로고 높이만큼 아래로 밀어낼 때 사용
+  const logo = await new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = () => resolve(null)
+    img.src = '/logo-1.png'
+  })
+  const logoMargin = Math.round(sw * 0.04)
+  const logoW = logo ? Math.round(sw * 0.27) : 0
+  const logoH = logo ? Math.round(logoW * logo.naturalHeight / logo.naturalWidth) : 0
+  const charOffsetY = logo ? logoH : 0
+
   // 캐릭터 실제 픽셀 bounding box 계산 → 의상 포함 실제 높이/너비 기준으로 중앙 배치
   const bounds = getNonTransparentBounds(captured)
   // 인쇄 캐릭터 크기도 코디 화면과 동일한 SCALE(0.5) 기준으로 맞춤 — 카드 밖으로 벗어나던 문제 수정
@@ -141,16 +154,16 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
     srcX = bounds.x; srcY = bounds.y; srcW = bounds.w; srcH = bounds.h
     scaledW = Math.round(srcW * CHAR_SCALE)
     scaledH = Math.round(srcH * CHAR_SCALE)
-    // 카드 사진 영역(고정 3:4) 중앙에 배치
+    // 카드 사진 영역(고정 3:4) 중앙에 배치, 로고 높이만큼 아래로 이동
     drawX = padH + Math.round((sw - scaledW) / 2)
-    drawY = padTop + Math.round((photoH - scaledH) / 2)
+    drawY = padTop + Math.round((photoH - scaledH) / 2) + charOffsetY
   } else {
     // 캐릭터 없을 때 fallback
     srcX = 0; srcY = 0; srcW = sw; srcH = sh
     scaledW = Math.round(sw * CHAR_SCALE)
     scaledH = Math.round(sh * CHAR_SCALE)
     drawX = padH - Math.round((scaledW - sw) / 2)
-    drawY = padTop + Math.round((photoH - scaledH) / 2)
+    drawY = padTop + Math.round((photoH - scaledH) / 2) + charOffsetY
   }
 
   // 아웃그로우 — 흰색 shadow 여러 단계로 캐릭터 윤곽 따라 발광
@@ -179,6 +192,11 @@ export async function capturePhotoCard(stageEl, bgColor = '#ffffff', bgImage = n
 
   // 캐릭터/의상 최종 선명하게 합성
   ctx.drawImage(captured, srcX, srcY, srcW, srcH, drawX, drawY, scaledW, scaledH)
+
+  // 로고를 사진 상단 정중앙에 합성 (여백 4%)
+  if (logo) {
+    ctx.drawImage(logo, padH + Math.round((sw - logoW) / 2), padTop + logoMargin, logoW, logoH)
+  }
 
   // 사진 영역 연한 회색 테두리 — 흰/색 배경 모두와 자연스럽게 구분
   ctx.strokeStyle = 'rgba(0,0,0,0.15)'
