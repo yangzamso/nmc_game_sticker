@@ -77,12 +77,13 @@ export function PrintOverlay({ printData, boardRef, onClose }) {
         {/* Layer 3: 커버 배경 — 화면 상단부터 슬롯 위치까지 전체를 가림 (28 = printOverlay의 padding-top과 동기화) */}
         <div className={styles.printCover} style={{ height: 28 + slotY }} />
 
-        {/* 로고 — 슬롯 상단 공간(0~slotY)의 정중앙, 화면 너비의 1/4 크기, z=5로 프린터 그래픽 위에 표시 */}
+        {/* 로고 — 브라우저 최상단(0)과 슬롯(slotY) 사이의 정중앙, 화면 너비의 1/3 크기, z=5로 프린터 그래픽 위에 표시
+            printScene 자체가 이미 overlay의 padding-top(28px)만큼 아래에서 시작하므로, 그만큼 보정해 top을 계산 */}
         <img src="/logo.png" alt="NEED MORE CASH — 2026 HBD CAFE"
           style={{
-            position: 'absolute', top: slotY / 2,
+            position: 'absolute', top: (slotY - 28) / 2,
             left: '50%', transform: 'translate(-50%, -50%)',
-            width: printerW * 0.25, zIndex: 5, pointerEvents: 'none',
+            width: printerW / 3, zIndex: 5, pointerEvents: 'none',
           }} />
 
         {/* 포토카드 — 슬롯(slotY)에서 나옴, z=2 */}
