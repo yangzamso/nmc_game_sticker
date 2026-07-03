@@ -32,7 +32,7 @@
 /* 코디 영역 로고 — board 기준 상단 정중앙 워터마크 (인쇄 포토카드와 동일한 형태) */
 .boardLogo {
   position: absolute;
-  top: 20px;
+  top: 10px;
   left: 50%;
   transform: translateX(-50%);
   width: 27%;
