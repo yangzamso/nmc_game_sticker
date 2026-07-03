@@ -32,8 +32,8 @@
 .boardLogo {
   position: absolute;
   top: 15px;
-  left: 15px;
-  width: 28%;
+  left: 0;
+  width: 25%;
   z-index: 30;
   pointer-events: none;
   user-select: none;
