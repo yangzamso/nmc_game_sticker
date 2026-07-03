@@ -61,9 +61,10 @@
 }
 
 
+/* board 기준 절대 위치 — top은 GameBoard.jsx에서 stageWidth(=stageHeight, 1:1) 기반으로 인라인 계산.
+   svh를 쓰지 않아 카카오톡 인앱 브라우저 주소창 토글에 위치가 흔들리지 않음 */
 .removeBtn {
-  position: fixed;
-  bottom: calc(40svh + 40px);
+  position: absolute;
   left: 50%;
   transform: translateX(-50%);
   padding: 7px 22px;

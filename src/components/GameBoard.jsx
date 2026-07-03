@@ -219,10 +219,11 @@ export function GameBoard() {
         </div>
       </div>
 
-      {/* 초기화 버튼 */}
+      {/* 초기화 버튼 — 패널 상단에서 40px 위(스테이지는 1:1이라 stageHeight === stageWidth) */}
       {(placed || placedProps.length > 0 || bgColor !== '#ffffff' || bgImage) && (
         <button
           className={`${styles.removeBtn} ${saving ? styles.hidden : ''}`}
+          style={{ top: stageWidth ? stageWidth - 64 : undefined }}
           onClick={() => { reset(); setPlaced(null); setPlacedProps([]) }}
         >
           초기화
