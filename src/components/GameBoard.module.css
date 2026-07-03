@@ -31,8 +31,8 @@
 .stageLogo {
   position: absolute;
   top: 10px;
-  left: 10px;
-  width: 24%;
+  left: 0;
+  width: 30%;
   z-index: 30;
   pointer-events: none;
   user-select: none;
