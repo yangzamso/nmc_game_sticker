@@ -36,7 +36,7 @@
 
 .successText {
   color: #fff;
-  font-family: 'NexonMaplestory', var(--sans);
+  font-family: var(--sans);
   font-size: 40px;
   font-weight: 700;
   letter-spacing: 1px;
