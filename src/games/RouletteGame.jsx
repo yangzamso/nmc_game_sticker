@@ -134,9 +134,14 @@ export function RouletteGame({ ownedIds, alreadyCleared, onResult }) {
 
       {retryMsg && <p className={styles.duplicateMsg}>{retryMsg}</p>}
 
-      {!spinning && !settling && !showingResult && (
-        <button className={styles.startBtn} onClick={handleStart}>START</button>
-      )}
+      <button
+        className={styles.startBtn}
+        onClick={handleStart}
+        disabled={spinning || settling || showingResult}
+        style={{ visibility: spinning || settling || showingResult ? 'hidden' : 'visible' }}
+      >
+        START
+      </button>
     </div>
   )
 }
