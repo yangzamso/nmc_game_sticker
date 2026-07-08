@@ -61,7 +61,9 @@ export function GameScreen() {
   }
 
   if (reward) {
-    return <CapsuleReveal costume={costumeById[reward]} onConfirm={handleConfirmReveal} />
+    // 룰렛(3)/캐치캐치(4)는 게임 자체 연출로 이미 결과를 보여주므로 가챠 캡슐 연출 없이 바로 아이템 등장
+    const instant = slot?.id === 3 || slot?.id === 4
+    return <CapsuleReveal costume={costumeById[reward]} onConfirm={handleConfirmReveal} instant={instant} />
   }
 
   if (slot?.id === 1) {
