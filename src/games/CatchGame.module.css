@@ -26,7 +26,9 @@
 
 /* 매 스텝마다 key가 바뀌며 새로 마운트되어 캐릭터 위 제자리에서 스냅 전환 애니메이션이 재생됨.
    옷마다 크기가 달라서(캐릭터 배율에 맞춤) 고정폭 대신 translate(-50%, -50%)로 캐릭터 중앙에 겹쳐 고정하고,
-   의상별 세로 보정값(--wornDy, CatchGame.jsx의 WORN_OFFSET_Y)을 더해 실제 몸 위치에 맞춤 */
+   의상별 세로 보정값(--wornDy, CatchGame.jsx의 WORN_OFFSET_Y)을 더해 실제 몸 위치에 맞춤.
+   forwards 없으면 애니메이션 종료 후 transform이 초기값(none)으로 되돌아가 STOP 직후(리마운트가
+   멈춰 애니메이션이 끝까지 재생되는 시점) 옷이 중앙 정렬 없이 좌상단으로 튀는 버그가 있었음 — 2026-07-09 */
 .wornItem {
   position: absolute;
   left: 50%;
@@ -34,7 +36,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: wornSwap 0.12s ease-out;
+  animation: wornSwap 0.12s ease-out forwards;
 }
 
 @keyframes wornSwap {
