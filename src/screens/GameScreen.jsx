@@ -4,6 +4,7 @@ import { SLOTS } from '../data/slots'
 import { COSTUMES } from '../data/costumes'
 import { CapsuleReveal } from '../components/common/CapsuleReveal'
 import { Modal } from '../components/common/Modal'
+import { LuckyDrawPanel } from '../components/common/LuckyDrawPanel'
 import { CardFlipGame } from '../games/CardFlipGame'
 import { QuizGame } from '../games/QuizGame'
 import { RouletteGame } from '../games/RouletteGame'
@@ -13,9 +14,9 @@ import dusty from '../styles/dustyBg.module.css'
 
 const costumeById = Object.fromEntries(COSTUMES.map((c) => [c.id, c]))
 
-// 슬롯1(카드뒤집기)/슬롯2(퀴즈)/슬롯3(룰렛)/슬롯4(캐치캐치)는 실제 게임으로 완성됨.
-// 슬롯5(흔들기)는 PRD상 개발 보류 상태라 스켈레톤(테스트 클리어 버튼) 그대로 유지.
-// 슬롯6(럭키드로우)의 정식 관리자 확인 UI는 5단계에서 만들며, 지금은 임시로 prompt()를 사용한다.
+// 슬롯1(카드뒤집기)/슬롯2(퀴즈)/슬롯3(룰렛)/슬롯4(캐치캐치)/슬롯6(럭키드로우)는 실제 화면으로 완성됨.
+// 슬롯5(흔들기)는 PRD상 개발 보류 상태이며, 허브에서 disabled 처리되어 애초에 이 화면에 진입할 수 없다
+// (아래 fallback 스켈레톤은 슬롯5가 나중에 열릴 때를 대비한 자리표시자).
 export function GameScreen() {
   const activeSlotId = useSessionStore((s) => s.activeSlotId)
   const slots = useSessionStore((s) => s.slots)
@@ -24,7 +25,6 @@ export function GameScreen() {
   const adminClearSlot6 = useSessionStore((s) => s.adminClearSlot6)
   const getRandomUnownedFromPool = useSessionStore((s) => s.getRandomUnownedFromPool)
   const [reward, setReward] = useState(null)
-  const [error, setError] = useState('')
   const [showQuizFail, setShowQuizFail] = useState(false)
 
   const slot = SLOTS.find((s) => s.id === activeSlotId)
@@ -36,20 +36,9 @@ export function GameScreen() {
     setReward(costumeId)
   }
 
-  async function handleTestClear() {
-    setError('')
-    if (slot.special) {
-      const adminPassword = window.prompt('관리자 비밀번호 (임시 테스트용 — 5단계에서 정식 UI로 교체)')
-      if (!adminPassword) return
-      try {
-        await adminClearSlot6(adminPassword)
-        setReward('strawberry')
-      } catch (e) {
-        setError(e.message)
-      }
-      return
-    }
-    handleGameClear()
+  async function handleLuckyDrawVerify(adminPassword) {
+    await adminClearSlot6(adminPassword)
+    setReward('strawberry')
   }
 
   function handleConfirmReveal() {
@@ -121,13 +110,31 @@ export function GameScreen() {
     )
   }
 
+  if (slot?.id === 6) {
+    if (slots[6]) {
+      return (
+        <div className={`${styles.screen} ${dusty.dustyBg}`}>
+          <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+          <h2 className={styles.title}>{slot.label}</h2>
+          <p className={styles.notice}>이미 받으셨어요! 코디 화면에서 확인해보세요.</p>
+        </div>
+      )
+    }
+    return (
+      <div className={`${styles.screen} ${dusty.dustyBg}`}>
+        <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+        <h2 className={styles.title}>{slot.label}</h2>
+        <LuckyDrawPanel onVerify={handleLuckyDrawVerify} />
+      </div>
+    )
+  }
+
   return (
     <div className={`${styles.screen} ${dusty.dustyBg}`}>
       <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
       <h2 className={styles.title}>{slot?.label}</h2>
       <p className={styles.notice}>게임 화면 준비 중 (0단계 스켈레톤)</p>
-      {error && <p className={styles.notice}>{error}</p>}
-      <button className={styles.testClearBtn} onClick={handleTestClear}>테스트 클리어</button>
+      <button className={styles.testClearBtn} onClick={handleGameClear}>테스트 클리어</button>
     </div>
   )
 }

@@ -16,6 +16,12 @@ export const QUIZ_GROUPS = [
         options: ['마법소녀', '연상남', '오타쿠군', '하얀늑대'],
         answerIndex: 3,
       },
+      {
+        type: 'choice',
+        question: '다음 중 닛몰캐쉬가 요약한 작품이 아닌 것은?',
+        options: ['왕과 사는 남자', '레제', '귀멸의 칼날', '프로젝트 헤일메리'],
+        answerIndex: 1,
+      },
     ],
   },
   {
@@ -33,6 +39,12 @@ export const QUIZ_GROUPS = [
         options: ['468km', '472km', '488km', '492km'],
         answerIndex: 0,
       },
+      {
+        type: 'choice',
+        question: '다음 중 닛몰캐쉬가 커버한 댄스가 아닌 것은?',
+        options: ['에이티즈 - BAD', '태양 - Live fast die slow', 'BTS - SWIM', 'CORTIS - RED RED'],
+        answerIndex: 2,
+      },
     ],
   },
   {
@@ -48,6 +60,11 @@ export const QUIZ_GROUPS = [
         question: '(Stay Close 갤럭시 키즈 앨범 소개 글) 다음 빈칸을 채우시오',
         excerpt: '202509xx 20살 머큐리와 21살 주피터,\n□□에서 □□으로 가는 길목 어딘가',
         blanks: ['소년', '어른'],
+      },
+      {
+        type: 'text',
+        question: '닛몰캐쉬가 금연 실패 후 금연하시는 분들에게 남긴 한마디는?',
+        blanks: ['흡연을 시작도 하지마십쇼'],
       },
     ],
   },

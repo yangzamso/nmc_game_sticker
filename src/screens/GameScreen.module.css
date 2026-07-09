@@ -24,11 +24,20 @@
   touch-action: manipulation;
 }
 
+/* 로고("NEED MORE CASH")와 톤을 맞춘 두꺼운 이탤릭 스포츠 서체.
+   :root의 font-synthesis:none 때문에 font-style:italic만으로는 기울어지지 않아(업로드된 폰트에
+   이탤릭 서체가 따로 없음), transform:skewX로 직접 기울임 */
 .title {
   position: relative;
   z-index: 1;
-  font-size: 20px;
+  display: inline-block;
+  font-family: 'KboDiamondGothic', var(--sans);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 22px;
+  letter-spacing: 0.3px;
   color: #fff;
+  transform: skewX(-8deg);
 }
 
 .notice {

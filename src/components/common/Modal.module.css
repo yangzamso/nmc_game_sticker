@@ -1,12 +1,20 @@
+/* inset:0 대신 CapsuleReveal.module.css의 .overlay와 동일한 패턴(left:50%+max-width+translateX)을 써서
+   #root의 480px 모바일 프레임 경계선(index.css) 밖으로 배경이 새어나가 경계선을 가리는 문제를 방지 */
 .overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  max-width: var(--app-max-width, 480px);
+  transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
   padding: 24px;
+  box-sizing: border-box;
 }
 
 .box {
@@ -19,16 +27,18 @@
   text-align: center;
 }
 
+/* .box 배경이 항상 흰색 고정이라, 시스템 다크모드에서 밝은 색으로 뒤집히는 --text-h/--text 대신
+   고정 색을 씀 (안 그러면 다크모드 기기에서 흰 배경에 거의 흰 글씨가 겹쳐 텍스트가 안 보임) */
 .title {
   font-size: 16px;
   font-weight: 700;
-  color: var(--text-h);
+  color: #08060d;
   margin-bottom: 8px;
 }
 
 .body {
   font-size: 14px;
-  color: var(--text);
+  color: #6b6375;
   line-height: 1.5;
   margin-bottom: 18px;
 }

@@ -1,7 +1,14 @@
-/* 모든 단계(성공/크랭크/캡슐낙하/공개)에서 기본 화면과 동일한 다크그레이 + 필름 그레인 배경 사용 (dustyBg.module.css와 동일 스펙) */
+/* 모든 단계(성공/크랭크/캡슐낙하/공개)에서 기본 화면과 동일한 다크그레이 + 필름 그레인 배경 사용 (dustyBg.module.css와 동일 스펙).
+   inset:0 대신 PrintOverlay.module.css의 .printOverlay와 동일한 패턴(left:50%+max-width+translateX)을 써서
+   #root의 480px 모바일 프레임 경계선(index.css) 밖으로 배경이 새어나가 경계선을 가리는 문제를 방지 */
 .overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  max-width: var(--app-max-width, 480px);
+  transform: translateX(-50%);
   background: #302d2b;
   display: flex;
   flex-direction: column;
@@ -140,24 +147,25 @@
   animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 이미지와 정확히 같은 크기/중심을 공유하는 래퍼 — 글로우가 항상 이미지 중앙에 오도록 함 */
+/* 이미지와 정확히 같은 크기/중심을 공유하는 래퍼 — 글로우가 항상 이미지 중앙에 오도록 함
+   (기존 140px의 1.5배 = 210px로 확대 — 2026-07-09) */
 .imageWrap {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 210px;
+  height: 210px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* 반짝 — 이미지 중앙을 기준으로 짧게 나타났다가 사라지는 글로우. 단일 웜톤 + 블러로 자연스럽게 퍼지도록 함 */
+/* 등장 순간 확 밝아졌다가 완전히 사라지는 노란빛 반짝임(플래시) — 화려한 "짠!" 임팩트 담당 */
 .burst {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 200px;
-  height: 200px;
-  margin: -100px 0 0 -100px;
+  width: 250px;
+  height: 250px;
+  margin: -125px 0 0 -125px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 224, 170, 0.85) 0%, rgba(255, 214, 130, 0.4) 35%, rgba(255, 214, 130, 0) 70%);
   filter: blur(4px);
@@ -172,12 +180,37 @@
   100% { opacity: 0; transform: scale(1.15); }
 }
 
+/* 반짝임(.burst)과 별개로 은은하게 남아, 어두운 배경(#302d2b) 위에서 아이템이 계속 대비되어 잘
+   보이도록 하는 흰색 스포트라이트 배경판 (2026-07-09 — 노란 잔광은 차가운 톤 의상과 섞이면 탁해
+   보여서, 색을 안 물들이는 흰색으로 분리) */
+.spotlight {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 250px;
+  height: 250px;
+  margin: -125px 0 0 -125px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.22) 40%, rgba(255, 255, 255, 0) 70%);
+  filter: blur(4px);
+  opacity: 0;
+  animation: spotlightFade 0.7s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes spotlightFade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* 두꺼운 검은 아웃라인의 플랫 스티커 아트라 부드러운 글로우 번짐이 지저분해 보여서(2026-07-09), 빛
+   번짐 대신 그림자를 진하게 줘서 "배경에서 떠오르는 스티커" 느낌으로 강조 */
 .revealImg {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 210px;
+  height: 210px;
   object-fit: contain;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.5));
 }
 
 .revealName {

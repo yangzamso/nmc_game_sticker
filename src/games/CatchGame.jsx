@@ -15,15 +15,15 @@ const CHAR_IMG_W = 140
 const CHAR_NAT_W = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
 const CHAR_SCALE = CHAR_IMG_W / CHAR_NAT_W
 
-// 의상별 세로 착용 위치 보정(화면 표시 px 기준, 아래로 +). 기본값(중앙 정렬)은 캐릭터와 의상 이미지의
-// "중심"을 맞추는데, 의상마다 이미지 안에서 모자~옷 여백이 달라 그대로 겹치면 안경/옷깃이 몸과 어긋난다.
-// 캐릭터 위에 실제로 겹쳐 렌더링해가며(브라우저 실측) 눈/어깨 위치가 맞도록 보정한 값 — 2026-07-08
-const WORN_OFFSET_Y = {
-  raito: -15,
-  detective: -15,
-  ajussi: -5,
-  bungae: 0,
-  wolf: 18,
+// 의상별 착용 위치 보정(화면 표시 px 기준, dx: 오른쪽 +, dy: 아래로 +). 기본값(중앙 정렬)은 캐릭터와
+// 의상 이미지의 "중심"을 맞추는데, 의상마다 이미지 안에서 모자~옷 여백이 달라 그대로 겹치면 안경/옷깃이
+// 몸과 어긋난다. public/dev-tools/worn-offset-tuner.html 에서 실측 후 값을 복사해 붙여넣으면 됨.
+const WORN_OFFSET = {
+  raito: { dx: 2, dy: -19 },
+  detective: { dx: 9, dy: -19 },
+  ajussi: { dx: 2, dy: -6 },
+  bungae: { dx: -2, dy: -3 },
+  wolf: { dx: 2, dy: 20 },
 }
 
 // 슬롯4 캐치캐치 — 캐릭터 위에 옷이 입혀진 채로 제자리에서 빠르게 순환 전환되고,
@@ -90,14 +90,18 @@ export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
 
   const current = ITEMS[index]
   const currentSize = getCostumeDisplaySize(current, CHAR_SCALE)
-  const wornDy = WORN_OFFSET_Y[current.id] ?? 0
+  const { dx: wornDx = 0, dy: wornDy = 0 } = WORN_OFFSET[current.id] ?? {}
 
   return (
     <div className={styles.catch}>
       <div className={styles.stage}>
         <img src="/items/character_base.png" alt="닛몰캐쉬" className={styles.characterImg} draggable={false} />
         {started && (
-          <div key={swapKey} className={styles.wornItem} style={{ '--wornDy': `${wornDy}px` }}>
+          <div
+            key={swapKey}
+            className={styles.wornItem}
+            style={{ '--wornDx': `${wornDx}px`, '--wornDy': `${wornDy}px` }}
+          >
             <img
               src={current.image}
               alt={current.name}

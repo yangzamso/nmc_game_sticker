@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>캐치캐치 옷 위치 튜너</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, 'Malgun Gothic', sans-serif;
+    background: #f4f2ee;
+    color: #333;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 24px;
+  }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  p.hint { font-size: 13px; color: #777; margin: 0 0 16px; }
+
+  .panel {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+
+  .stageWrap { width: 420px; }
+  .stage {
+    position: relative;
+    width: 420px;
+    height: 560px;
+    margin: 0 auto;
+    background:
+      linear-gradient(#eee 1px, transparent 1px),
+      linear-gradient(90deg, #eee 1px, transparent 1px);
+    background-size: 20px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .characterImg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+  }
+  .wornImg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35));
+    pointer-events: none;
+  }
+  .crosshair {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 1px; height: 100%;
+    background: rgba(255,0,90,0.25);
+    transform: translateX(-50%);
+  }
+  .crosshair.h {
+    width: 100%; height: 1px;
+    transform: translateY(-50%);
+  }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tabs button {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: #fafafa;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .tabs button.active {
+    background: #ff6b9d;
+    border-color: #ff6b9d;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .controls { width: 320px; }
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .field .val { color: #ff6b9d; font-variant-numeric: tabular-nums; }
+  .field input[type="range"] { width: 100%; }
+  .field .numRow { display: flex; gap: 8px; margin-top: 6px; }
+  .field .numRow input[type="number"] {
+    width: 70px;
+    padding: 4px 6px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+  .field .numRow button {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: #fafafa;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  .outputBox {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Consolas', monospace;
+    font-size: 12.5px;
+    padding: 14px;
+    border-radius: 8px;
+    white-space: pre;
+    line-height: 1.5;
+  }
+  .copyBtn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ff9a6c, #ff6b9d);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .copyBtn.copied { background: #4caf50; }
+
+  .resetAllBtn {
+    margin-top: 8px;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+    cursor: pointer;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="panel stageWrap">
+  <h1>캐치캐치 옷 위치 튜너</h1>
+  <p class="hint">캐릭터 위 실제 인게임 배율로 옷을 겹쳐 보여줍니다. 슬라이더로 맞춘 뒤 오른쪽 "코드 복사"로 CatchGame.jsx에 붙여넣으세요.</p>
+  <div class="tabs" id="tabs"></div>
+  <div class="stage" id="stage">
+    <div class="crosshair"></div>
+    <div class="crosshair h"></div>
+    <img class="characterImg" src="/items/character_base.png" alt="캐릭터" />
+    <img class="wornImg" id="wornImg" src="" alt="" />
+  </div>
+</div>
+
+<div class="panel controls">
+  <div class="field">
+    <label>가로 위치 (dx) <span class="val" id="dxVal">0</span>px</label>
+    <input type="range" id="dxSlider" min="-80" max="80" step="1" value="0" />
+    <div class="numRow">
+      <input type="number" id="dxNum" value="0" />
+      <button id="dxReset">기본값</button>
+    </div>
+  </div>
+  <div class="field">
+    <label>세로 위치 (dy) <span class="val" id="dyVal">0</span>px</label>
+    <input type="range" id="dySlider" min="-100" max="100" step="1" value="0" />
+    <div class="numRow">
+      <input type="number" id="dyNum" value="0" />
+      <button id="dyReset">기본값</button>
+    </div>
+  </div>
+
+  <p class="hint">아래는 현재까지 조정한 5개 옷의 값입니다. 탭을 바꿔가며 하나씩 맞추면 자동으로 반영됩니다.</p>
+  <div class="outputBox" id="output"></div>
+  <button class="copyBtn" id="copyBtn">코드 복사</button>
+  <button class="resetAllBtn" id="resetAllBtn">전체 기본값으로 리셋</button>
+</div>
+
+<script type="module">
+import { COSTUMES, CHARACTER_CROP, getCostumeDisplaySize } from '/src/data/costumes.js'
+
+// CatchGame.jsx와 동일한 배율 계산 (표시 크기는 다르지만 배율 자체는 동일하게 맞춰서 실제 인게임과 같은 비율로 보이게 함)
+const CHAR_IMG_W = 300 // 이 튜너의 캐릭터 표시 폭(px) — CatchGame.jsx는 140px지만 여기선 크게 보기 위해 확대
+const CHAR_NAT_W = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
+const CHAR_SCALE = CHAR_IMG_W / CHAR_NAT_W
+// 튜너 확대 배율 = CatchGame.jsx 대비 몇 배 크게 보여주는지 (dx/dy 값 자체는 축소해서 실제 인게임 px로 환산해야 함)
+const ZOOM = CHAR_IMG_W / 140
+
+// CatchGame.jsx의 WORN_OFFSET 기본값과 동일 — 이 파일도 같이 갱신해야 함
+const DEFAULTS = {
+  raito: { dx: 0, dy: -15 },
+  detective: { dx: 0, dy: -15 },
+  ajussi: { dx: 0, dy: -5 },
+  bungae: { dx: 0, dy: 0 },
+  wolf: { dx: 0, dy: 18 },
+}
+
+const ITEMS = COSTUMES.filter((c) => c.id !== 'strawberry')
+const values = {}
+ITEMS.forEach((c) => { values[c.id] = { ...DEFAULTS[c.id] } })
+
+let current = ITEMS[0].id
+
+const tabsEl = document.getElementById('tabs')
+const wornImg = document.getElementById('wornImg')
+const dxSlider = document.getElementById('dxSlider')
+const dySlider = document.getElementById('dySlider')
+const dxNum = document.getElementById('dxNum')
+const dyNum = document.getElementById('dyNum')
+const dxVal = document.getElementById('dxVal')
+const dyVal = document.getElementById('dyVal')
+const output = document.getElementById('output')
+const copyBtn = document.getElementById('copyBtn')
+
+ITEMS.forEach((c) => {
+  const btn = document.createElement('button')
+  btn.textContent = c.name
+  btn.dataset.id = c.id
+  btn.addEventListener('click', () => selectCostume(c.id))
+  tabsEl.appendChild(btn)
+})
+
+function selectCostume(id) {
+  current = id
+  ;[...tabsEl.children].forEach((b) => b.classList.toggle('active', b.dataset.id === id))
+  const costume = ITEMS.find((c) => c.id === id)
+  const size = getCostumeDisplaySize(costume, CHAR_SCALE)
+  wornImg.src = costume.image
+  wornImg.alt = costume.name
+  wornImg.style.width = size.w + 'px'
+  wornImg.style.height = size.h + 'px'
+  syncControlsFromValue()
+  renderWorn()
+}
+
+function syncControlsFromValue() {
+  const v = values[current]
+  dxSlider.value = v.dx
+  dySlider.value = v.dy
+  dxNum.value = v.dx
+  dyNum.value = v.dy
+  dxVal.textContent = v.dx
+  dyVal.textContent = v.dy
+}
+
+function renderWorn() {
+  const v = values[current]
+  // 튜너는 ZOOM배 확대해서 보여주므로, 실제 인게임 px(v.dx/v.dy)에 ZOOM을 곱해 화면에 반영
+  wornImg.style.transform = `translate(calc(-50% + ${v.dx * ZOOM}px), calc(-50% + ${v.dy * ZOOM}px))`
+  renderOutput()
+}
+
+function renderOutput() {
+  const lines = ITEMS.map((c) => `  ${c.id}: { dx: ${values[c.id].dx}, dy: ${values[c.id].dy} },`)
+  output.textContent = 'const WORN_OFFSET = {\n' + lines.join('\n') + '\n}'
+}
+
+function setDx(v) {
+  v = Math.max(-80, Math.min(80, Math.round(v)))
+  values[current].dx = v
+  dxSlider.value = v; dxNum.value = v; dxVal.textContent = v
+  renderWorn()
+}
+function setDy(v) {
+  v = Math.max(-150, Math.min(150, Math.round(v)))
+  values[current].dy = v
+  dySlider.value = v; dyNum.value = v; dyVal.textContent = v
+  renderWorn()
+}
+
+dxSlider.addEventListener('input', (e) => setDx(+e.target.value))
+dySlider.addEventListener('input', (e) => setDy(+e.target.value))
+dxNum.addEventListener('input', (e) => setDx(+e.target.value || 0))
+dyNum.addEventListener('input', (e) => setDy(+e.target.value || 0))
+
+document.getElementById('dxReset').addEventListener('click', () => setDx(DEFAULTS[current].dx))
+document.getElementById('dyReset').addEventListener('click', () => setDy(DEFAULTS[current].dy))
+document.getElementById('resetAllBtn').addEventListener('click', () => {
+  ITEMS.forEach((c) => { values[c.id] = { ...DEFAULTS[c.id] } })
+  syncControlsFromValue()
+  renderWorn()
+})
+
+copyBtn.addEventListener('click', async () => {
+  await navigator.clipboard.writeText(output.textContent)
+  copyBtn.textContent = '복사됨!'
+  copyBtn.classList.add('copied')
+  setTimeout(() => { copyBtn.textContent = '코드 복사'; copyBtn.classList.remove('copied') }, 1200)
+})
+
+selectCostume(ITEMS[0].id)
+</script>
+</body>
+</html>
