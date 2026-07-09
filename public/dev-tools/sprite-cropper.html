@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>스프라이트 좌표 추출 도구</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, 'Malgun Gothic', sans-serif;
+    background: #f4f2ee;
+    color: #333;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 24px;
+  }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  p.hint { font-size: 13px; color: #777; margin: 0 0 14px; line-height: 1.5; }
+
+  .panel {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+
+  .sourceWrap { max-width: 1000px; }
+  .sourceRow { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .sourceRow select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 13px;
+  }
+  .sourceRow .dims { font-size: 12px; color: #999; }
+
+  .canvasWrap {
+    position: relative;
+    overflow: auto;
+    max-width: 100%;
+    max-height: 640px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background:
+      linear-gradient(45deg, #eee 25%, transparent 25%),
+      linear-gradient(-45deg, #eee 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #eee 75%),
+      linear-gradient(-45deg, transparent 75%, #eee 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    cursor: crosshair;
+  }
+  #srcCanvas { display: block; }
+
+  .controls { width: 340px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px; color: #555; }
+  .field input[type="text"],
+  .field input[type="number"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .coordGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .coordGrid .field { margin-bottom: 0; }
+
+  .btnRow { display: flex; gap: 8px; margin: 14px 0; }
+  .btnRow button {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fafafa;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .btnRow button.primary {
+    background: linear-gradient(135deg, #ff9a6c, #ff6b9d);
+    color: #fff;
+    border: none;
+  }
+
+  .previewBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+    background:
+      linear-gradient(45deg, #eee 25%, transparent 25%),
+      linear-gradient(-45deg, #eee 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #eee 75%),
+      linear-gradient(-45deg, transparent 75%, #eee 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    margin-bottom: 14px;
+    padding: 8px;
+  }
+  #previewCanvas { max-width: 100%; max-height: 220px; image-rendering: pixelated; }
+
+  .outputBox {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Consolas', monospace;
+    font-size: 12.5px;
+    padding: 14px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .copyBtn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ff9a6c, #ff6b9d);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .copyBtn.copied { background: #4caf50; }
+
+  .downloadBtn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fafafa;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="panel sourceWrap">
+  <h1>스프라이트 좌표 추출 도구</h1>
+  <p class="hint">
+    원본 시트(nmc.png / nmc-1.png)에서 새 아이템 영역을 드래그로 대충 선택한 뒤 "자동 트림"을 누르면,
+    선택 범위 안의 실제 그림 픽셀(투명 아님)에 딱 맞게 좌표를 잡아줍니다 — costumes.js의 기존 아이템들도
+    전부 이렇게(파일 크기 = crop 크기) 만들어져 있어서 같은 방식이면 바로 호환됩니다.
+    맞춘 뒤 "PNG 다운로드"로 잘라낸 이미지를 저장해 public/items/에 넣고, "코드 복사"로 나온 스니펫을
+    costumes.js의 COSTUMES/PROPS 배열에 붙여넣으세요.
+  </p>
+  <div class="sourceRow">
+    <select id="sourceSelect">
+      <option value="/nmc-1.png">nmc-1.png</option>
+      <option value="/nmc.png">nmc.png</option>
+    </select>
+    <span class="dims" id="dims"></span>
+  </div>
+  <div class="canvasWrap" id="canvasWrap">
+    <canvas id="srcCanvas"></canvas>
+  </div>
+</div>
+
+<div class="panel controls">
+  <div class="field">
+    <label>id (영문, costumes.js 배열 키)</label>
+    <input type="text" id="idInput" placeholder="예: item_gun" />
+  </div>
+  <div class="field">
+    <label>name (표시 이름)</label>
+    <input type="text" id="nameInput" placeholder="예: 물총" />
+  </div>
+
+  <div class="coordGrid">
+    <div class="field"><label>x1</label><input type="number" id="x1" value="0" /></div>
+    <div class="field"><label>y1</label><input type="number" id="y1" value="0" /></div>
+    <div class="field"><label>x2</label><input type="number" id="x2" value="0" /></div>
+    <div class="field"><label>y2</label><input type="number" id="y2" value="0" /></div>
+  </div>
+
+  <div class="btnRow">
+    <button id="trimBtn" class="primary">자동 트림</button>
+    <button id="clearBtn">선택 초기화</button>
+  </div>
+
+  <p class="hint" style="margin-bottom:8px;">미리보기 (실제 잘리는 영역)</p>
+  <div class="previewBox"><canvas id="previewCanvas"></canvas></div>
+
+  <div class="outputBox" id="output">아직 선택 영역이 없습니다.</div>
+  <button class="copyBtn" id="copyBtn">코드 복사</button>
+  <button class="downloadBtn" id="downloadBtn">PNG 다운로드</button>
+</div>
+
+<script>
+const sourceSelect = document.getElementById('sourceSelect')
+const dimsEl = document.getElementById('dims')
+const canvasWrap = document.getElementById('canvasWrap')
+const srcCanvas = document.getElementById('srcCanvas')
+const srcCtx = srcCanvas.getContext('2d')
+const previewCanvas = document.getElementById('previewCanvas')
+const previewCtx = previewCanvas.getContext('2d')
+const idInput = document.getElementById('idInput')
+const nameInput = document.getElementById('nameInput')
+const x1El = document.getElementById('x1')
+const y1El = document.getElementById('y1')
+const x2El = document.getElementById('x2')
+const y2El = document.getElementById('y2')
+const output = document.getElementById('output')
+const copyBtn = document.getElementById('copyBtn')
+const downloadBtn = document.getElementById('downloadBtn')
+const trimBtn = document.getElementById('trimBtn')
+const clearBtn = document.getElementById('clearBtn')
+
+let img = null
+let imgData = null // 전체 이미지 픽셀 캐시 (알파 스캔용)
+let naturalW = 0, naturalH = 0
+let rect = null // { x1, y1, x2, y2 } in natural image px
+let dragging = false
+let dragStart = null
+
+function loadSource(src) {
+  img = new Image()
+  img.onload = () => {
+    naturalW = img.naturalWidth
+    naturalH = img.naturalHeight
+    dimsEl.textContent = naturalW + ' x ' + naturalH + 'px'
+    srcCanvas.width = naturalW
+    srcCanvas.height = naturalH
+    srcCtx.clearRect(0, 0, naturalW, naturalH)
+    srcCtx.drawImage(img, 0, 0)
+    imgData = srcCtx.getImageData(0, 0, naturalW, naturalH)
+    rect = null
+    updateOutputs()
+    redrawOverlay()
+  }
+  img.src = src
+}
+
+function alphaAt(x, y) {
+  if (x < 0 || y < 0 || x >= naturalW || y >= naturalH) return 0
+  return imgData.data[(y * naturalW + x) * 4 + 3]
+}
+
+// 선택 영역 안에서 알파값이 임계치 이상인 픽셀의 최소 바운딩 박스를 찾음
+function tightBounds(rx1, ry1, rx2, ry2) {
+  const THRESH = 10
+  let minX = null, minY = null, maxX = null, maxY = null
+  const startX = Math.max(0, Math.min(rx1, rx2))
+  const endX = Math.min(naturalW, Math.max(rx1, rx2))
+  const startY = Math.max(0, Math.min(ry1, ry2))
+  const endY = Math.min(naturalH, Math.max(ry1, ry2))
+  for (let y = startY; y < endY; y++) {
+    for (let x = startX; x < endX; x++) {
+      if (alphaAt(x, y) > THRESH) {
+        if (minX === null || x < minX) minX = x
+        if (maxX === null || x > maxX) maxX = x
+        if (minY === null || y < minY) minY = y
+        if (maxY === null || y > maxY) maxY = y
+      }
+    }
+  }
+  if (minX === null) return null // 선택 영역 안에 불투명 픽셀이 없음
+  return { x1: minX, y1: minY, x2: maxX + 1, y2: maxY + 1 }
+}
+
+function redrawOverlay() {
+  srcCtx.clearRect(0, 0, naturalW, naturalH)
+  srcCtx.drawImage(img, 0, 0)
+  if (rect) {
+    srcCtx.save()
+    srcCtx.strokeStyle = '#ff2f7d'
+    srcCtx.lineWidth = 2
+    srcCtx.setLineDash([6, 4])
+    const x = Math.min(rect.x1, rect.x2)
+    const y = Math.min(rect.y1, rect.y2)
+    const w = Math.abs(rect.x2 - rect.x1)
+    const h = Math.abs(rect.y2 - rect.y1)
+    srcCtx.strokeRect(x, y, w, h)
+    srcCtx.restore()
+  }
+}
+
+function updatePreview() {
+  if (!rect) {
+    previewCanvas.width = 0
+    previewCanvas.height = 0
+    return
+  }
+  const x = Math.min(rect.x1, rect.x2)
+  const y = Math.min(rect.y1, rect.y2)
+  const w = Math.max(1, Math.abs(rect.x2 - rect.x1))
+  const h = Math.max(1, Math.abs(rect.y2 - rect.y1))
+  previewCanvas.width = w
+  previewCanvas.height = h
+  previewCtx.clearRect(0, 0, w, h)
+  previewCtx.drawImage(srcCanvasSnapshot(), x, y, w, h, 0, 0, w, h)
+}
+
+// overlay(핑크 점선)가 그려지지 않은 원본 픽셀을 크롭에 써야 하므로 별도 오프스크린에 원본만 유지
+let cleanCanvas = null
+function srcCanvasSnapshot() {
+  if (!cleanCanvas) cleanCanvas = document.createElement('canvas')
+  cleanCanvas.width = naturalW
+  cleanCanvas.height = naturalH
+  const c = cleanCanvas.getContext('2d')
+  c.clearRect(0, 0, naturalW, naturalH)
+  c.drawImage(img, 0, 0)
+  return cleanCanvas
+}
+
+function updateOutputs() {
+  x1El.value = rect ? Math.min(rect.x1, rect.x2) : 0
+  y1El.value = rect ? Math.min(rect.y1, rect.y2) : 0
+  x2El.value = rect ? Math.max(rect.x1, rect.x2) : 0
+  y2El.value = rect ? Math.max(rect.y1, rect.y2) : 0
+
+  if (!rect) {
+    output.textContent = '아직 선택 영역이 없습니다.'
+    return
+  }
+  const id = idInput.value.trim() || 'new_item'
+  const name = nameInput.value.trim() || '이름'
+  const x1 = Math.min(rect.x1, rect.x2)
+  const y1 = Math.min(rect.y1, rect.y2)
+  const x2 = Math.max(rect.x1, rect.x2)
+  const y2 = Math.max(rect.y1, rect.y2)
+  output.textContent =
+    `{ id: '${id}', name: '${name}', image: '/items/${id}.png', crop: { x1: ${x1}, y1: ${y1}, x2: ${x2}, y2: ${y2} } },`
+  updatePreview()
+}
+
+function canvasPointFromEvent(e) {
+  const r = srcCanvas.getBoundingClientRect()
+  const scaleX = naturalW / r.width
+  const scaleY = naturalH / r.height
+  const x = Math.round((e.clientX - r.left) * scaleX)
+  const y = Math.round((e.clientY - r.top) * scaleY)
+  return { x: Math.max(0, Math.min(naturalW, x)), y: Math.max(0, Math.min(naturalH, y)) }
+}
+
+srcCanvas.addEventListener('pointerdown', (e) => {
+  dragging = true
+  const p = canvasPointFromEvent(e)
+  dragStart = p
+  rect = { x1: p.x, y1: p.y, x2: p.x, y2: p.y }
+  redrawOverlay()
+  updateOutputs()
+})
+srcCanvas.addEventListener('pointermove', (e) => {
+  if (!dragging) return
+  const p = canvasPointFromEvent(e)
+  rect = { x1: dragStart.x, y1: dragStart.y, x2: p.x, y2: p.y }
+  redrawOverlay()
+  updateOutputs()
+})
+window.addEventListener('pointerup', () => { dragging = false })
+
+;['x1','y1','x2','y2'].forEach((k) => {
+  document.getElementById(k).addEventListener('input', () => {
+    if (!rect) rect = { x1: 0, y1: 0, x2: 0, y2: 0 }
+    rect = {
+      x1: +x1El.value, y1: +y1El.value, x2: +x2El.value, y2: +y2El.value,
+    }
+    redrawOverlay()
+    updateOutputs()
+  })
+})
+idInput.addEventListener('input', updateOutputs)
+nameInput.addEventListener('input', updateOutputs)
+
+trimBtn.addEventListener('click', () => {
+  if (!rect) return
+  const tight = tightBounds(rect.x1, rect.y1, rect.x2, rect.y2)
+  if (!tight) { alert('선택 영역 안에 불투명 픽셀이 없습니다. 범위를 넓게 다시 선택해주세요.'); return }
+  rect = tight
+  redrawOverlay()
+  updateOutputs()
+})
+
+clearBtn.addEventListener('click', () => {
+  rect = null
+  redrawOverlay()
+  updateOutputs()
+})
+
+copyBtn.addEventListener('click', async () => {
+  await navigator.clipboard.writeText(output.textContent)
+  copyBtn.textContent = '복사됨!'
+  copyBtn.classList.add('copied')
+  setTimeout(() => { copyBtn.textContent = '코드 복사'; copyBtn.classList.remove('copied') }, 1200)
+})
+
+downloadBtn.addEventListener('click', () => {
+  if (!rect) return
+  const x = Math.min(rect.x1, rect.x2)
+  const y = Math.min(rect.y1, rect.y2)
+  const w = Math.max(1, Math.abs(rect.x2 - rect.x1))
+  const h = Math.max(1, Math.abs(rect.y2 - rect.y1))
+  const out = document.createElement('canvas')
+  out.width = w
+  out.height = h
+  out.getContext('2d').drawImage(srcCanvasSnapshot(), x, y, w, h, 0, 0, w, h)
+  const id = idInput.value.trim() || 'new_item'
+  out.toBlob((blob) => {
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = id + '.png'
+    a.click()
+  })
+})
+
+sourceSelect.addEventListener('change', () => loadSource(sourceSelect.value))
+loadSource(sourceSelect.value)
+</script>
+</body>
+</html>

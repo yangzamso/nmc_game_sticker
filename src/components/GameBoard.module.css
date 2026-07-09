@@ -3,8 +3,11 @@
   display: flex;
   flex-direction: column;
   /* dvh 대신 svh 사용 — 카카오톡 인앱 브라우저 등에서 스크롤 중 주소창이 접혔다 펴질 때
-     레이아웃이 실시간으로 재계산되며 배치된 의상/소품 위치가 틀어지는 문제 방지 */
-  min-height: 100svh;
+     레이아웃이 실시간으로 재계산되며 배치된 의상/소품 위치가 틀어지는 문제 방지.
+     min-height가 아니라 height 고정 — .panel의 flex:1이 남는 공간을 정확히 계산해 채우려면
+     .board 자체가 "정해진 높이"를 가져야 함 (min-height면 flex 계산 기준이 없어 패널이
+     콘텐츠 크기만큼 커지면서 화면 밖으로 넘쳐버림, 2026-07-09) */
+  height: 100svh;
   background: #ffffff;
   background-size: cover;
   background-position: center;
@@ -86,10 +89,12 @@
   z-index: 100;
 }
 
-/* 패널 — 고정 40svh + 세로 스크롤 */
+/* 패널 — 최소 40svh + 남는 공간까지 채움(flex:1) + 세로 스크롤.
+   고정 40svh였을 때는 스테이지(4:5 비율) 높이에 따라 .board(min-height:100svh) 하단에 배경색이
+   비치는 틈이 생겼음 — flex:1로 남는 공간을 패널이 다 차지하도록 해서 틈 없이 맨 끝까지 채움 (2026-07-09) */
 .panel {
-  height: 40svh;
-  flex-shrink: 0;
+  flex: 1;
+  min-height: 40svh;
   background: #302d2b;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;

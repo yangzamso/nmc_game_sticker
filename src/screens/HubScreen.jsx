@@ -29,7 +29,7 @@ export function HubScreen() {
   return (
     <div className={`${styles.hub} ${dusty.dustyBg}`}>
       <img src="/logo.png" alt="NEED MORE CASH — 2026 HBD CAFE" className={styles.logo} />
-      <p className={styles.greeting}>{nickname}님, 옷을 모아보세요!</p>
+      <p className={styles.greeting}>{nickname}님, 게임을 하고 캐릭터 옷을 모아보세요!</p>
       <p className={styles.progress}>{clearedCount} / 6 획득</p>
 
       <div className={styles.grid}>

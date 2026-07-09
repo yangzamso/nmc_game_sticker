@@ -26,6 +26,8 @@ export const WORN_OFFSET = {
   ajussi: { dx: 2, dy: -6 },
   bungae: { dx: -2, dy: -3 },
   wolf: { dx: 2, dy: 20 },
+  // 딸기는 캐치캐치 풀에는 없지만(럭키드로우 전용), GameBoard.jsx 코디 화면 드래그 스냅에 재사용됨
+  strawberry: { dx: 1, dy: -35 },
 }
 
 // 슬롯4 캐치캐치 — 캐릭터 위에 옷이 입혀진 채로 제자리에서 빠르게 순환 전환되고,

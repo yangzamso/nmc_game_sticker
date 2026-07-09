@@ -179,7 +179,7 @@
     </div>
   </div>
 
-  <p class="hint">아래는 현재까지 조정한 5개 옷의 값입니다. 탭을 바꿔가며 하나씩 맞추면 자동으로 반영됩니다.</p>
+  <p class="hint">아래는 현재까지 조정한 6개 옷의 값입니다(딸기 포함). 탭을 바꿔가며 하나씩 맞추면 자동으로 반영됩니다.</p>
   <div class="outputBox" id="output"></div>
   <button class="copyBtn" id="copyBtn">코드 복사</button>
   <button class="resetAllBtn" id="resetAllBtn">전체 기본값으로 리셋</button>
@@ -196,15 +196,18 @@ const CHAR_SCALE = CHAR_IMG_W / CHAR_NAT_W
 const ZOOM = CHAR_IMG_W / 140
 
 // CatchGame.jsx의 WORN_OFFSET 기본값과 동일 — 이 파일도 같이 갱신해야 함
+// 딸기(strawberry)는 캐치캐치 풀에는 없어 좌표가 없었음(럭키드로우 전용) — GameBoard.jsx 코디 화면
+// 드래그 스냅에도 쓰이므로 기본값 0,0에서 시작해 여기서 맞춰서 구함 (2026-07-09)
 const DEFAULTS = {
-  raito: { dx: 0, dy: -15 },
-  detective: { dx: 0, dy: -15 },
-  ajussi: { dx: 0, dy: -5 },
-  bungae: { dx: 0, dy: 0 },
-  wolf: { dx: 0, dy: 18 },
+  raito: { dx: 2, dy: -19 },
+  detective: { dx: 9, dy: -19 },
+  ajussi: { dx: 2, dy: -6 },
+  bungae: { dx: -2, dy: -3 },
+  wolf: { dx: 2, dy: 20 },
+  strawberry: { dx: 1, dy: -35 },
 }
 
-const ITEMS = COSTUMES.filter((c) => c.id !== 'strawberry')
+const ITEMS = COSTUMES
 const values = {}
 ITEMS.forEach((c) => { values[c.id] = { ...DEFAULTS[c.id] } })
 

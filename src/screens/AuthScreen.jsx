@@ -55,7 +55,7 @@ export function AuthScreen() {
   return (
     <div className={`${styles.screen} ${dusty.dustyBg}`}>
       <img src="/logo.png" alt="NEED MORE CASH — 2026 HBD CAFE" className={styles.logo} />
-      <p className={styles.subtitle}>닉네임과 비밀번호로 시작해보세요</p>
+      <p className={styles.subtitle}>닉네임과 비밀번호 입력 후<br />시작하기를 눌러주세요.</p>
 
       <input
         className={styles.input}
