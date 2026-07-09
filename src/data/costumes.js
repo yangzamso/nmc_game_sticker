@@ -15,7 +15,7 @@ export const PROPS = [
   { id: 'item_rose',       name: '장미',      image: '/items/item_rose.png',       propScale: 2.2 },
   { id: 'item_sword',      name: '장난감검',  image: '/items/item_sword.png',      propScale: 1.6, rotate: 10 },
   { id: 'item_watergun',   name: '물총',      image: '/items/item_watergun.png',   propScale:1.4 },
-  { id: 'item_chupachups', name: '츄팝츕스',  image: '/items/item_chupachups.png', propScale: 1.4 },
+  { id: 'item_chupachups', name: '츄팝츕스',  image: '/items/item_chupachups.png', propScale: 1.3 },
   { id: 'item_magnifier',  name: '돋보기',    image: '/items/item_magnifier.png', rotate: -10, propScale: 1.2 },
 ]
 

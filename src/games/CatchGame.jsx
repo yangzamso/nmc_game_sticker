@@ -19,7 +19,7 @@ const CHAR_SCALE = CHAR_IMG_W / CHAR_NAT_W
 const WORN_OFFSET_LIMITS = {
   minDx: -18,
   maxDx: 18,
-  minDy: -28,
+  minDy: -35,
   maxDy: 24,
 }
 
