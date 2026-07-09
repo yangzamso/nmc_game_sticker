@@ -4,7 +4,7 @@ import { useGameStore } from '../store/gameStore'
 import { useSessionStore } from '../store/sessionStore'
 import { capturePhotoCard } from '../utils/savePhotoCard'
 import { PrintOverlay } from './PrintOverlay'
-import { WORN_OFFSET, CHAR_IMG_W as CATCH_CHAR_IMG_W } from '../games/CatchGame'
+import { WORN_OFFSET, CHAR_IMG_W as CATCH_CHAR_IMG_W, clampWornOffset } from '../games/CatchGame'
 import styles from './GameBoard.module.css'
 
 const charNatW = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
@@ -23,9 +23,13 @@ function getCharacterCenter(stageR) {
 function snapToWornPosition(costumeId, pos, stageR, charW) {
   const offset = WORN_OFFSET[costumeId]
   if (!offset) return pos
+  const clampedOffset = clampWornOffset(offset)
   const scale = charW / CATCH_CHAR_IMG_W
   const center = getCharacterCenter(stageR)
-  const target = { x: center.x + offset.dx * scale, y: center.y + offset.dy * scale }
+  const target = {
+    x: center.x + clampedOffset.dx * scale,
+    y: center.y + clampedOffset.dy * scale,
+  }
   const dist = Math.hypot(pos.x - target.x, pos.y - target.y)
   return dist <= SNAP_RADIUS ? target : pos
 }

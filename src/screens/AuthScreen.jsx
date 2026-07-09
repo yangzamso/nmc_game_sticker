@@ -19,7 +19,7 @@ export function AuthScreen() {
     setError('')
 
     if (!name) return setError('닉네임을 입력해주세요')
-    if (isWeakPassword(password)) return setError('비밀번호를 다시 설정해주세요')
+    if (isWeakPassword(password)) return setError('쉽게 유추할 수 있는 비밀번호는 사용할 수 없습니다.\n다른 비밀번호를 입력해 주세요.')
 
     setLoading(true)
     try {

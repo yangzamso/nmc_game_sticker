@@ -16,6 +16,12 @@ const AJUSSI_INDEX = ITEMS.findIndex((c) => c.id === 'ajussi')
 export const CHAR_IMG_W = 140
 const CHAR_NAT_W = CHARACTER_CROP.x2 - CHARACTER_CROP.x1
 const CHAR_SCALE = CHAR_IMG_W / CHAR_NAT_W
+const WORN_OFFSET_LIMITS = {
+  minDx: -18,
+  maxDx: 18,
+  minDy: -28,
+  maxDy: 24,
+}
 
 // 의상별 착용 위치 보정(화면 표시 px 기준, dx: 오른쪽 +, dy: 아래로 +). 기본값(중앙 정렬)은 캐릭터와
 // 의상 이미지의 "중심"을 맞추는데, 의상마다 이미지 안에서 모자~옷 여백이 달라 그대로 겹치면 안경/옷깃이
@@ -28,6 +34,17 @@ export const WORN_OFFSET = {
   wolf: { dx: 2, dy: 20 },
   // 딸기는 캐치캐치 풀에는 없지만(럭키드로우 전용), GameBoard.jsx 코디 화면 드래그 스냅에 재사용됨
   strawberry: { dx: 1, dy: -35 },
+}
+
+function clamp(val, min, max) {
+  return Math.max(min, Math.min(max, val))
+}
+
+export function clampWornOffset(offset = {}) {
+  return {
+    dx: clamp(offset.dx ?? 0, WORN_OFFSET_LIMITS.minDx, WORN_OFFSET_LIMITS.maxDx),
+    dy: clamp(offset.dy ?? 0, WORN_OFFSET_LIMITS.minDy, WORN_OFFSET_LIMITS.maxDy),
+  }
 }
 
 // 슬롯4 캐치캐치 — 캐릭터 위에 옷이 입혀진 채로 제자리에서 빠르게 순환 전환되고,
@@ -84,7 +101,7 @@ export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
         return
       }
       if (ownedIds.includes(landedId)) {
-        setRetryMsg('이미 보유한 옷이에요! 다시 도전해주세요')
+        setRetryMsg('이미 보유한 옷이에요. 다시 도전해주세요.')
       } else {
         onResult(landedId)
       }
@@ -94,7 +111,7 @@ export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
 
   const current = ITEMS[index]
   const currentSize = getCostumeDisplaySize(current, CHAR_SCALE)
-  const { dx: wornDx = 0, dy: wornDy = 0 } = WORN_OFFSET[current.id] ?? {}
+  const { dx: wornDx = 0, dy: wornDy = 0 } = clampWornOffset(WORN_OFFSET[current.id])
 
   return (
     <div className={styles.catch}>

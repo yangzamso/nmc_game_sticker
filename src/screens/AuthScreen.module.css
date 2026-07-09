@@ -50,6 +50,8 @@
   color: #ff8aa8;
   font-size: 13px;
   margin-top: 2px;
+  white-space: pre-line;
+  text-align: center;
 }
 
 .submitBtn {

@@ -108,10 +108,12 @@
 
 
 .blankText {
-  font-family: 'NexonMaplestory', var(--sans);
+  font-family: 'KboDiamondGothic', var(--sans);
+  font-style: italic;
   font-size: 32px;
   font-weight: 700;
   color: #444;
+  transform: skewX(-8deg);
 }
 
 /* 시계 바늘처럼 판 중앙에서 뻗어나오는 고정 바늘 — 판이 회전해도 이 바늘은 움직이지 않고 12시 방향 고정.

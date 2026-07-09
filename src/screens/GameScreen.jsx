@@ -58,7 +58,7 @@ export function GameScreen() {
   if (slot?.id === 1) {
     return (
       <div className={`${styles.screen} ${dusty.dustyBg}`}>
-        <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+        <button className={styles.backBtn} onClick={backToHub}>← 이전으로</button>
         <h2 className={styles.title}>{slot.label}</h2>
         <CardFlipGame onClear={handleGameClear} />
       </div>
@@ -68,7 +68,7 @@ export function GameScreen() {
   if (slot?.id === 2) {
     return (
       <div className={`${styles.screen} ${dusty.dustyBg}`}>
-        <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+        <button className={styles.backBtn} onClick={backToHub}>← 이전으로</button>
         <h2 className={styles.title}>닛몰퀴즈</h2>
         <QuizGame onClear={handleGameClear} onFail={() => setShowQuizFail(true)} />
         {showQuizFail && (
@@ -84,7 +84,7 @@ export function GameScreen() {
     const ownedIds = Object.values(slots).filter(Boolean)
     return (
       <div className={`${styles.screen} ${dusty.dustyBg}`}>
-        <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+        <button className={styles.backBtn} onClick={backToHub}>← 이전으로</button>
         <h2 className={styles.title}>{slot.label}</h2>
         <RouletteGame
           ownedIds={ownedIds}
@@ -99,7 +99,7 @@ export function GameScreen() {
     const ownedIds = Object.values(slots).filter(Boolean)
     return (
       <div className={`${styles.screen} ${dusty.dustyBg}`}>
-        <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+        <button className={styles.backBtn} onClick={backToHub}>← 이전으로</button>
         <h2 className={styles.title}>{slot.label}</h2>
         <CatchGame
           ownedIds={ownedIds}
@@ -114,7 +114,7 @@ export function GameScreen() {
     if (slots[6]) {
       return (
         <div className={`${styles.screen} ${dusty.dustyBg}`}>
-          <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+          <button className={styles.backBtn} onClick={backToHub}>← 이전으로</button>
           <h2 className={styles.title}>{slot.label}</h2>
           <p className={styles.notice}>이미 받으셨어요! 코디 화면에서 확인해보세요.</p>
         </div>
@@ -122,7 +122,7 @@ export function GameScreen() {
     }
     return (
       <div className={`${styles.screen} ${dusty.dustyBg}`}>
-        <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+        <button className={styles.backBtn} onClick={backToHub}>← 이전으로</button>
         <h2 className={styles.title}>{slot.label}</h2>
         <LuckyDrawPanel onVerify={handleLuckyDrawVerify} />
       </div>
@@ -131,7 +131,7 @@ export function GameScreen() {
 
   return (
     <div className={`${styles.screen} ${dusty.dustyBg}`}>
-      <button className={styles.backBtn} onClick={backToHub}>← 허브로</button>
+      <button className={styles.backBtn} onClick={backToHub}>← 이전으로</button>
       <h2 className={styles.title}>{slot?.label}</h2>
       <p className={styles.notice}>미니게임은 준비 중이에요! 지금은 눌러서 바로 옷을 받아보세요.</p>
       <button className={styles.testClearBtn} onClick={handleGameClear}>아이템 받기</button>

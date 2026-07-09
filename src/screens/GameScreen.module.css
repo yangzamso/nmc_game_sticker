@@ -32,9 +32,9 @@
   z-index: 1;
   display: inline-block;
   font-family: 'KboDiamondGothic', var(--sans);
-  font-weight: 700;
+  font-weight: 600;
   font-style: italic;
-  font-size: 22px;
+  font-size: 26px;
   letter-spacing: 0.3px;
   color: #fff;
   transform: skewX(-8deg);

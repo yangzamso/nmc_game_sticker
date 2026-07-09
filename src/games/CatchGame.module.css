@@ -50,9 +50,15 @@
 }
 
 .duplicateMsg {
+  width: 280px;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #ff8aa8;
   font-size: 13px;
   text-align: center;
+  white-space: nowrap;
 }
 
 .startBtn {
