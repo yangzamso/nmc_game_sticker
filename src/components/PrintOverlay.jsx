@@ -6,7 +6,7 @@ import styles from './PrintOverlay.module.css'
 const PRINT_SOUND_START = 0.725
 
 function playPrinterSound() {
-  const audio = new Audio('/printer-audio.mp3')
+  const audio = new Audio('/printer/printer-audio.mp3')
   const start = () => {
     audio.currentTime = PRINT_SOUND_START
     audio.play().catch(() => {})
@@ -71,7 +71,7 @@ export function PrintOverlay({ printData, boardRef, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Layer 4 (back): printer.svg — 카드 뒤에 위치 */}
-        <img src="/printer.svg" alt=""
+        <img src="/printer/printer.svg" alt=""
           style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 1, display: 'block' }} />
 
         {/* Layer 3: 커버 배경 — 화면 상단부터 슬롯 위치까지 전체를 가림 (28 = printOverlay의 padding-top과 동기화) */}
@@ -97,7 +97,7 @@ export function PrintOverlay({ printData, boardRef, onClose }) {
         </div>
 
         {/* Layer 1 (front): printer-top.svg — 슬롯 투명 영역으로 카드가 보임 */}
-        <img src="/printer-top.svg" alt=""
+        <img src="/printer/printer-top.svg" alt=""
           style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 4, display: 'block' }} />
       </div>
       <button type="button" className={styles.replayBtn} onClick={onReplay} aria-label="애니메이션 다시 재생">

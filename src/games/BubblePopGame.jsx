@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { COSTUMES } from '../data/costumes'
 import styles from './BubblePopGame.module.css'
 
-// 목표(제시) 옷 후보 — 5종. 딸기는 구매 전용이라 제시 대상에서는 제외(다른 미니게임들과 동일한 풀)
-const TARGET_ITEMS = COSTUMES.filter((c) => c.id !== 'strawberry')
-// 방울로 나타날 수 있는 옷 — 딸기 포함 6종 전부(디코이로만 등장, 목표로는 안 나옴)
+// 목표(제시) 옷 후보 — 딸기 포함 6종 전부
+const TARGET_ITEMS = COSTUMES
+// 방울로 나타날 수 있는 옷 — 딸기 포함 6종 전부
 const BUBBLE_ITEMS = COSTUMES
 const GOAL = 20
 const TIME_LIMIT_MS = 20000

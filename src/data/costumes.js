@@ -21,12 +21,12 @@ export const PROPS = [
 
 export const BACKGROUNDS = [
   { id: 'bg_white', label: '기본', color: '#ffffff' },
-  { id: 'bg_pink', label: '핑크', image: '/bg-pink.jpg' },
-  { id: 'bg_sky', label: '하늘', image: '/bg-sky.jpg' },
-  { id: 'bg_yellow', label: '노랑', image: '/bg-yellow.jpg' },
-  { id: 'bg_mint', label: '민트', image: '/bg-mint.jpg' },
+  { id: 'bg_pink', label: '핑크', image: '/bg/bg-pink.jpg' },
+  { id: 'bg_sky', label: '하늘', image: '/bg/bg-sky.jpg' },
+  { id: 'bg_yellow', label: '노랑', image: '/bg/bg-yellow.jpg' },
+  { id: 'bg_mint', label: '민트', image: '/bg/bg-mint.jpg' },
   { id: 'bg_lavender', label: '라벤더', image: '/bg-lavender.jpg' },
-  { id: 'bg_pastel', label: '파스텔', image: '/bg-pastel.jpg' },
+  { id: 'bg_pastel', label: '파스텔', image: '/bg/bg-pastel.jpg' },
 ]
 
 export const SCALE = 0.5

@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import styles from './CardFlipGame.module.css'
 
-// 실제 사진 소재로 교체 예정 — 지금은 placeholder 텍스트 (docs/PRD-collection-game.md 6절)
-// 3x4(12칸) 그리드라 6쌍 필요
-const CARD_LABELS = ['야바위 라이토', '류헤이', '머큐리', '파란정장', '아저씨', '탐정']
+// 3x4(12칸) 그리드라 6쌍 필요 — public/card/card-1.jpg ~ card-6.jpg
+const CARD_IMAGES = Array.from({ length: 6 }, (_, i) => `/card/card-${i + 1}.jpg`)
 
 function shuffle(array) {
   const arr = [...array]
@@ -16,9 +15,9 @@ function shuffle(array) {
 
 function buildDeck() {
   return shuffle(
-    CARD_LABELS.flatMap((label, i) => [
-      { key: `${i}-a`, label },
-      { key: `${i}-b`, label },
+    CARD_IMAGES.flatMap((image, i) => [
+      { key: `${i}-a`, image },
+      { key: `${i}-b`, image },
     ])
   )
 }
@@ -42,7 +41,7 @@ export function CardFlipGame({ onClear }) {
 
     setLocked(true)
     const [a, b] = next
-    if (deck[a].label === deck[b].label) {
+    if (deck[a].image === deck[b].image) {
       setTimeout(() => {
         setMatched((m) => [...m, a, b])
         setFlipped([])
@@ -67,7 +66,9 @@ export function CardFlipGame({ onClear }) {
             className={[styles.card, isFaceUp ? styles.faceUp : '', isMatched ? styles.matched : ''].join(' ')}
             onClick={() => handleCardClick(index)}
           >
-            {isFaceUp ? card.label : '?'}
+            {isFaceUp
+              ? <img src={card.image} alt="" className={styles.cardImg} draggable={false} />
+              : '?'}
           </button>
         )
       })}
