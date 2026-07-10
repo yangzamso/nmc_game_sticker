@@ -60,14 +60,18 @@ function clampItemCenter(centerX, centerY, width, height, rotationDeg, minX, min
 
 const PRINT_CHARACTER_SCALE = 1.2
 const DEFAULT_PRINT_CHARACTER_SHIFT_LIMIT_X = 0
-const WATERGUN_PRINT_CHARACTER_SHIFT_LIMIT_X = 0
+const WATERGUN_PRINT_CHARACTER_SHIFT_LIMIT_X = 20
+const SWORD_PRINT_CHARACTER_SHIFT_LIMIT_X = 15
 const PRINT_CHARACTER_SHIFT_LIMIT_Y = 0
 const STRAWBERRY_PRINT_CHARACTER_SHIFT_Y = 30 // 딸기 착용 시에만 적용되는 고정 하향 보정(자동 중앙정렬과는 무관)
 
 function getPrintCharacterShiftLimitX(layout) {
-  return layout.props.some((prop) => prop.id === 'item_watergun')
-    ? WATERGUN_PRINT_CHARACTER_SHIFT_LIMIT_X
-    : DEFAULT_PRINT_CHARACTER_SHIFT_LIMIT_X
+  const hasWatergun = layout.props.some((prop) => prop.id === 'item_watergun')
+  const hasSword = layout.props.some((prop) => prop.id === 'item_sword')
+  if (hasWatergun && hasSword) return Infinity // 물총+장난감검 동시 착용 시 합산 영역 전체를 가로 정중앙 정렬
+  if (hasWatergun) return WATERGUN_PRINT_CHARACTER_SHIFT_LIMIT_X
+  if (hasSword) return SWORD_PRINT_CHARACTER_SHIFT_LIMIT_X
+  return DEFAULT_PRINT_CHARACTER_SHIFT_LIMIT_X
 }
 
 function getElementBounds(centerX, centerY, width, height, rotationDeg = 0) {

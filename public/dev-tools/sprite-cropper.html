@@ -39,7 +39,7 @@
     position: relative;
     overflow: auto;
     max-width: 100%;
-    max-height: 640px;
+    max-height: 900px;
     border: 1px solid #ddd;
     border-radius: 8px;
     background:
@@ -145,7 +145,7 @@
 <div class="panel sourceWrap">
   <h1>스프라이트 좌표 추출 도구</h1>
   <p class="hint">
-    원본 시트(nmc.png / nmc-1.png)에서 새 아이템 영역을 드래그로 대충 선택한 뒤 "자동 트림"을 누르면,
+    원본 시트(nmc.png)에서 새 아이템 영역을 드래그로 대충 선택한 뒤 "자동 트림"을 누르면,
     선택 범위 안의 실제 그림 픽셀(투명 아님)에 딱 맞게 좌표를 잡아줍니다 — costumes.js의 기존 아이템들도
     전부 이렇게(파일 크기 = crop 크기) 만들어져 있어서 같은 방식이면 바로 호환됩니다.
     맞춘 뒤 "PNG 다운로드"로 잘라낸 이미지를 저장해 public/items/에 넣고, "코드 복사"로 나온 스니펫을
@@ -153,7 +153,6 @@
   </p>
   <div class="sourceRow">
     <select id="sourceSelect">
-      <option value="/nmc-1.png">nmc-1.png</option>
       <option value="/nmc.png">nmc.png</option>
     </select>
     <span class="dims" id="dims"></span>
@@ -165,7 +164,7 @@
 
 <div class="panel controls">
   <div class="field">
-    <label>id (영문, costumes.js 배열 키)</label>
+    <label>id (영문, costumes.js 배열 키) <button type="button" id="guessIdBtn" style="font-size:11px; padding:2px 6px; border-radius:6px; border:1px solid #ddd; background:#fafafa; cursor:pointer; margin-left:4px;">이름으로 자동생성</button></label>
     <input type="text" id="idInput" placeholder="예: item_gun" />
   </div>
   <div class="field">
@@ -191,6 +190,12 @@
   <div class="outputBox" id="output">아직 선택 영역이 없습니다.</div>
   <button class="copyBtn" id="copyBtn">코드 복사</button>
   <button class="downloadBtn" id="downloadBtn">PNG 다운로드</button>
+
+  <p class="hint" style="margin:16px 0 8px;">드래그 → (자동 트림) → 이름 지정 후 "리스트에 등록"을 누르면 아래 목록에 쌓입니다. 여러 아이템을 모았다가 한 번에 복사하세요.</p>
+  <button class="downloadBtn" id="registerBtn" style="margin-top:0;">리스트에 등록</button>
+  <div class="outputBox" id="listOutput" style="min-height: 20px; margin-top:10px;">등록된 항목이 없습니다.</div>
+  <button class="copyBtn" id="copyListBtn">목록 전체 복사</button>
+  <button class="downloadBtn" id="clearListBtn">목록 비우기</button>
 </div>
 
 <script>
@@ -212,6 +217,62 @@ const copyBtn = document.getElementById('copyBtn')
 const downloadBtn = document.getElementById('downloadBtn')
 const trimBtn = document.getElementById('trimBtn')
 const clearBtn = document.getElementById('clearBtn')
+const guessIdBtn = document.getElementById('guessIdBtn')
+
+// 프로젝트에 이미 쓰인 한글 이름 → 영문 단어 매핑(costumes.js 참고) + 자주 쓸 법한 단어 추가.
+// 사전에 없는 단어는 한글 로마자 표기(국립국어원 표준안 간이 버전)로 대체 생성함.
+const KOREAN_TO_ENGLISH = {
+  '야바위 라이토': 'raito', '라이토': 'raito',
+  '탐정': 'detective', '명탐정': 'detective',
+  '아저씨': 'ajussi',
+  '번개보이': 'bungae', '번개': 'bungae',
+  '하얀늑대': 'wolf', '늑대': 'wolf',
+  '딸기': 'strawberry',
+  '모자': 'hat', '장미': 'rose', '장난감검': 'sword', '검': 'sword',
+  '물총': 'watergun', '총': 'gun',
+  '츄팝츕스': 'chupachups', '츄파춥스': 'chupachups', '막대사탕': 'chupachups',
+  '돋보기': 'magnifier',
+  '안경': 'glasses', '선글라스': 'sunglasses', '리본': 'ribbon', '왕관': 'crown',
+  '지팡이': 'cane', '마법봉': 'wand', '가방': 'bag', '신발': 'shoes',
+  '목도리': 'scarf', '장갑': 'gloves', '우산': 'umbrella', '풍선': 'balloon',
+  '하트': 'heart', '별': 'star', '나비': 'butterfly', '꽃': 'flower',
+  '반지': 'ring', '목걸이': 'necklace', '시계': 'watch', '가면': 'mask',
+  '날개': 'wings', '뿔': 'horn', '부채': 'fan', '카메라': 'camera',
+}
+
+const HANGUL_INITIALS = ['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h']
+const HANGUL_MEDIALS = ['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i']
+const HANGUL_FINALS = ['','g','k','k','n','n','n','t','l','k','m','l','l','l','p','l','m','p','p','t','t','ng','t','t','k','t','p','h']
+
+// 한글 음절을 로마자로 간이 변환(사전에 없는 새 단어의 대체 id 생성용)
+function romanizeHangul(text) {
+  let out = ''
+  for (const ch of text) {
+    const code = ch.codePointAt(0) - 0xac00
+    if (code < 0 || code > 11171) {
+      if (/[a-zA-Z0-9]/.test(ch)) out += ch
+      continue
+    }
+    const initial = Math.floor(code / 588)
+    const medial = Math.floor((code % 588) / 28)
+    const final = code % 28
+    out += HANGUL_INITIALS[initial] + HANGUL_MEDIALS[medial] + HANGUL_FINALS[final]
+  }
+  return out
+}
+
+function guessEnglishId(koreanName) {
+  const name = koreanName.trim()
+  if (!name) return ''
+  if (KOREAN_TO_ENGLISH[name]) return KOREAN_TO_ENGLISH[name]
+  // 사전 키 중 이름에 포함된 것을 긴 것부터 찾아 매칭(부분 일치)
+  const sortedKeys = Object.keys(KOREAN_TO_ENGLISH).sort((a, b) => b.length - a.length)
+  for (const key of sortedKeys) {
+    if (name.includes(key)) return KOREAN_TO_ENGLISH[key]
+  }
+  const romanized = romanizeHangul(name).toLowerCase().trim()
+  return romanized || 'new_item'
+}
 
 let img = null
 let imgData = null // 전체 이미지 픽셀 캐시 (알파 스캔용)
@@ -310,25 +371,45 @@ function srcCanvasSnapshot() {
   return cleanCanvas
 }
 
-function updateOutputs() {
-  x1El.value = rect ? Math.min(rect.x1, rect.x2) : 0
-  y1El.value = rect ? Math.min(rect.y1, rect.y2) : 0
-  x2El.value = rect ? Math.max(rect.x1, rect.x2) : 0
-  y2El.value = rect ? Math.max(rect.y1, rect.y2) : 0
-
-  if (!rect) {
-    output.textContent = '아직 선택 영역이 없습니다.'
-    return
-  }
+function buildSnippet() {
+  if (!rect) return null
   const id = idInput.value.trim() || 'new_item'
   const name = nameInput.value.trim() || '이름'
   const x1 = Math.min(rect.x1, rect.x2)
   const y1 = Math.min(rect.y1, rect.y2)
   const x2 = Math.max(rect.x1, rect.x2)
   const y2 = Math.max(rect.y1, rect.y2)
-  output.textContent =
-    `{ id: '${id}', name: '${name}', image: '/items/${id}.png', crop: { x1: ${x1}, y1: ${y1}, x2: ${x2}, y2: ${y2} } },`
+  return `{ id: '${id}', name: '${name}', image: '/items/${id}.png', crop: { x1: ${x1}, y1: ${y1}, x2: ${x2}, y2: ${y2} } },`
+}
+
+function updateOutputs() {
+  x1El.value = rect ? Math.min(rect.x1, rect.x2) : 0
+  y1El.value = rect ? Math.min(rect.y1, rect.y2) : 0
+  x2El.value = rect ? Math.max(rect.x1, rect.x2) : 0
+  y2El.value = rect ? Math.max(rect.y1, rect.y2) : 0
+
+  const snippet = buildSnippet()
+  output.textContent = snippet || '아직 선택 영역이 없습니다.'
   updatePreview()
+}
+
+// 자동 트림 시 등록된 아이템 목록(한 번에 복사용)
+const registeredItems = []
+const listOutput = document.getElementById('listOutput')
+const copyListBtn = document.getElementById('copyListBtn')
+const clearListBtn = document.getElementById('clearListBtn')
+const registerBtn = document.getElementById('registerBtn')
+
+function renderList() {
+  listOutput.textContent = registeredItems.length
+    ? registeredItems.join('\n')
+    : '등록된 항목이 없습니다.'
+}
+
+function registerCurrentItem() {
+  const snippet = buildSnippet()
+  if (snippet) registeredItems.push(snippet)
+  renderList()
 }
 
 function canvasPointFromEvent(e) {
@@ -368,7 +449,14 @@ window.addEventListener('pointerup', () => { dragging = false })
   })
 })
 idInput.addEventListener('input', updateOutputs)
-nameInput.addEventListener('input', updateOutputs)
+nameInput.addEventListener('input', () => {
+  if (!idInput.value.trim()) idInput.value = guessEnglishId(nameInput.value)
+  updateOutputs()
+})
+guessIdBtn.addEventListener('click', () => {
+  idInput.value = guessEnglishId(nameInput.value)
+  updateOutputs()
+})
 
 trimBtn.addEventListener('click', () => {
   if (!rect) return
@@ -377,6 +465,24 @@ trimBtn.addEventListener('click', () => {
   rect = tight
   redrawOverlay()
   updateOutputs()
+})
+
+registerBtn.addEventListener('click', () => {
+  if (!rect) { alert('먼저 영역을 드래그로 선택해주세요.'); return }
+  registerCurrentItem()
+})
+
+copyListBtn.addEventListener('click', async () => {
+  if (!registeredItems.length) return
+  await navigator.clipboard.writeText(registeredItems.join('\n'))
+  copyListBtn.textContent = '복사됨!'
+  copyListBtn.classList.add('copied')
+  setTimeout(() => { copyListBtn.textContent = '목록 전체 복사'; copyListBtn.classList.remove('copied') }, 1200)
+})
+
+clearListBtn.addEventListener('click', () => {
+  registeredItems.length = 0
+  renderList()
 })
 
 clearBtn.addEventListener('click', () => {
