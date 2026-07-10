@@ -34,10 +34,13 @@ export function PrintOverlay({ printData, boardRef, onClose }) {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
 
-  // UI 버튼으로 닫을 때도 history.back()을 거쳐, 위에서 추가해둔 히스토리 항목을 정리
+  // UI 버튼으로 닫을 때는 history.back()을 타지 않고 바로 onClose — 일부 모바일 인앱 브라우저에서는
+  // pushState로 쌓은 엔트리 하나를 back()으로 넘어가면 앱 자체를 완전히 빠져나가버리는 경우가 있음.
+  // 남은 printOverlay 히스토리 엔트리는 popstate 리스너가 이미 정리(위 useEffect의 cleanup)하므로
+  // 다음 실제 뒤로가기 제스처에도 안전함.
   const handleClose = useCallback(() => {
-    window.history.back()
-  }, [])
+    onClose()
+  }, [onClose])
 
   const onReplay = useCallback((e) => {
     e.stopPropagation()
