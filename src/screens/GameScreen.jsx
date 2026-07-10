@@ -49,7 +49,14 @@ export function GameScreen() {
 
   if (reward) {
     const instant = slot?.id === 2 || slot?.id === 4
-    return <CapsuleReveal costume={costumeById[reward]} onConfirm={handleConfirmReveal} instant={instant} />
+    return (
+      <CapsuleReveal
+        costume={costumeById[reward]}
+        onConfirm={handleConfirmReveal}
+        onCancel={backToHub}
+        instant={instant}
+      />
+    )
   }
 
   if (slot?.id === 1) {

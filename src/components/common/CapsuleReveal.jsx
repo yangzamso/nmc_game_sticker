@@ -9,7 +9,7 @@ const DROP_MS = 600
 // 성공! → 뽑기 기계 크랭크 돌리기 → 캡슐 배출+낙하 → 자동으로 열리며 아이템 짠! 등장
 // instant=true면 캡슐 연출(크랭크/낙하) 없이 바로 'opened' 단계로 열려 아이템만 짠! 등장한다
 // (룰렛/캐치캐치는 이미 자체 연출로 결과를 보여주므로 가챠 연출이 중복이라 생략 — 2026-07-08)
-export function CapsuleReveal({ costume, onConfirm, instant = false }) {
+export function CapsuleReveal({ costume, onConfirm, onCancel, instant = false }) {
   const [phase, setPhase] = useState(instant ? 'opened' : 'success') // 'success' | 'cranking' | 'dropping' | 'opened'
   const [replayKey, setReplayKey] = useState(0)
 
@@ -31,6 +31,11 @@ export function CapsuleReveal({ costume, onConfirm, instant = false }) {
 
   return (
     <div className={styles.overlay}>
+      {/* 가챠머신/추첨 연출 중에도 다른 화면들과 동일하게 이전으로 나갈 수 있도록 항상 노출 */}
+      {onCancel && (
+        <button className={styles.backBtn} onClick={onCancel}>← 이전으로</button>
+      )}
+
       {/* 개발 중 애니메이션 확인용 — 프로덕션 빌드에서는 렌더링되지 않음 */}
       {import.meta.env.DEV && (
         <button

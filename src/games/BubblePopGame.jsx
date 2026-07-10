@@ -2,28 +2,30 @@ import { useEffect, useRef, useState } from 'react'
 import { COSTUMES } from '../data/costumes'
 import styles from './BubblePopGame.module.css'
 
-// 옷 5종 (딸기는 구매 전용이라 이 풀에서도 제외 — 다른 미니게임들과 동일한 풀 재사용)
-const ITEMS = COSTUMES.filter((c) => c.id !== 'strawberry')
-const GOAL = 10
-const TIME_LIMIT_MS = 25000
-const SPAWN_INTERVAL_MS = 450
-const BUBBLE_LIFETIME_MS = 3500
-const TARGET_PROB = 0.4 // 목표 옷 방울이 나올 확률 (나머지는 디코이 4종에 고르게 분배)
-const TARGET_CHANGE_COUNT = 2 // 25초 동안 제시 옷이 총 2번 바뀜(=3구간). 바뀌는 순간 이전 목표 방울은 자동으로 디코이가 됨
+// 목표(제시) 옷 후보 — 5종. 딸기는 구매 전용이라 제시 대상에서는 제외(다른 미니게임들과 동일한 풀)
+const TARGET_ITEMS = COSTUMES.filter((c) => c.id !== 'strawberry')
+// 방울로 나타날 수 있는 옷 — 딸기 포함 6종 전부(디코이로만 등장, 목표로는 안 나옴)
+const BUBBLE_ITEMS = COSTUMES
+const GOAL = 15
+const TIME_LIMIT_MS = 20000
+const SPAWN_INTERVAL_MS = 267 // 20초 ÷ 267ms ≈ 총 방울 75개 (70~80개 대비용 여유분)
+const BUBBLE_LIFETIME_MS = 3200 // 동시 체공 개수 ≈ LIFETIME/SPAWN_INTERVAL = 12개
+const TARGET_PROB = 0.4 // 목표 옷 방울이 나올 확률 (나머지 60%는 디코이 5종에 고르게 분배)
+const TARGET_CHANGE_COUNT = 0 // 제시 옷은 게임 중 바뀌지 않음(처음 뜬 목표 그대로 끝까지 유지)
 const TARGET_PHASE_MS = TIME_LIMIT_MS / (TARGET_CHANGE_COUNT + 1)
 
 function pickBubbleCostumeId(targetId) {
   if (Math.random() < TARGET_PROB) return targetId
-  const decoys = ITEMS.filter((c) => c.id !== targetId)
+  const decoys = BUBBLE_ITEMS.filter((c) => c.id !== targetId)
   return decoys[Math.floor(Math.random() * decoys.length)].id
 }
 
 function randomTarget() {
-  return ITEMS[Math.floor(Math.random() * ITEMS.length)]
+  return TARGET_ITEMS[Math.floor(Math.random() * TARGET_ITEMS.length)]
 }
 
-// 슬롯5 방울 터트리기 — 제시된 옷 방울만 골라 터뜨려 제한시간(15초) 안에 목표 개수(10개)를 채우면 클리어.
-// 디코이(목표가 아닌 나머지 옷) 방울은 터뜨려도 무해 — 카운트만 안 될 뿐 페널티는 없음.
+// 슬롯5 방울 터트리기 — 제시된 옷 방울만 골라 터뜨려 제한시간(20초) 안에 목표 개수(GOAL)를 채우면 클리어.
+// 디코이(목표가 아닌 나머지 옷) 방울을 터뜨리면 -1 페널티(0 밑으로는 안 내려감).
 // 실패해도(시간 내 미달성) 진행 자체는 막히지 않고, 퀴즈(슬롯2)와 동일하게 재도전 안내 후 바로 재시작 가능.
 export function BubblePopGame({ onClear, onFail }) {
   const [target, setTarget] = useState(randomTarget)
@@ -66,7 +68,7 @@ export function BubblePopGame({ onClear, onFail }) {
 
   // 제시 옷 교체 — 화면에 이미 떠 있던 이전 목표 방울은 targetIdRef가 바뀌는 순간 자동으로 디코이 취급됨
   function rotateTarget() {
-    const next = ITEMS.filter((c) => c.id !== targetIdRef.current)
+    const next = TARGET_ITEMS.filter((c) => c.id !== targetIdRef.current)
     const picked = next[Math.floor(Math.random() * next.length)]
     targetIdRef.current = picked.id
     setTarget(picked)
@@ -121,7 +123,11 @@ export function BubblePopGame({ onClear, onFail }) {
 
   function popBubble(bubble) {
     removeBubble(bubble.id)
-    if (bubble.costumeId !== targetIdRef.current) return // 디코이 — 무해, 카운트 안 됨
+    if (bubble.costumeId !== targetIdRef.current) {
+      hitsRef.current = Math.max(0, hitsRef.current - 1) // 디코이 오답 — 카운트 -1 (0 밑으로는 안 내려감)
+      setHits(hitsRef.current)
+      return
+    }
     hitsRef.current += 1
     setHits(hitsRef.current)
     if (hitsRef.current >= GOAL) finish(true)
@@ -139,16 +145,9 @@ export function BubblePopGame({ onClear, onFail }) {
         </div>
       </div>
 
-      {phase === 'playing' && (
-        <div className={styles.hud}>
-          <span className={styles.timer}>⏱ {timeLeftSec}초</span>
-          <span className={styles.progress}>{hits} / {GOAL}</span>
-        </div>
-      )}
-
       <div className={styles.stage}>
         {bubbles.map((b) => {
-          const costume = ITEMS.find((c) => c.id === b.costumeId)
+          const costume = BUBBLE_ITEMS.find((c) => c.id === b.costumeId)
           return (
             <button
               key={b.id}
@@ -164,6 +163,11 @@ export function BubblePopGame({ onClear, onFail }) {
         {phase === 'ready' && (
           <button className={styles.startBtn} onClick={handleStart}>START</button>
         )}
+      </div>
+
+      <div className={styles.hud} style={{ visibility: phase === 'playing' ? 'visible' : 'hidden' }}>
+        <span className={styles.timer}>⏱ {timeLeftSec}초</span>
+        <span className={styles.progress}>{hits} / {GOAL}</span>
       </div>
     </div>
   )

@@ -5,6 +5,7 @@
   flex-direction: column;
   align-items: center;
   gap: 14px;
+  width: 100%;
 }
 
 .targetRow {
@@ -63,10 +64,12 @@
   letter-spacing: 0.3px;
 }
 
-/* 방울이 아래에서 위로 떠오르는 무대 — overflow:hidden으로 위쪽으로 빠져나간 방울은 잘려서 사라짐 */
+/* 방울이 아래에서 위로 떠오르는 무대 — overflow:hidden으로 위쪽으로 빠져나간 방울은 잘려서 사라짐.
+   화면 너비를 최대한 다 쓰도록 고정폭 대신 100%(.screen의 좌우 24px 패딩만큼만 여백) + max-width로 상한만 둠 */
 .stage {
   position: relative;
-  width: 300px;
+  width: 100%;
+  max-width: 420px;
   height: 380px;
   border-radius: 20px;
   background: linear-gradient(180deg, #2a3a52 0%, #1c2636 100%);

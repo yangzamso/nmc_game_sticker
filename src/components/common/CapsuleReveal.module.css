@@ -28,6 +28,20 @@
   background-size: 300px 300px;
 }
 
+/* GameScreen.module.css의 backBtn과 동일한 스타일 — 가챠 연출 중에도 다른 화면들과 동일하게 이전으로 나갈 수 있게 함 */
+.backBtn {
+  position: absolute;
+  z-index: 310;
+  top: 16px;
+  left: 16px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
 /* PrintOverlay.module.css의 replayBtn과 동일한 스타일 — 개발 중 애니메이션 다시보기용 */
 .replayBtn {
   position: absolute;
