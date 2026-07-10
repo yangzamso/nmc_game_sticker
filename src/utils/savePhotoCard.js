@@ -59,9 +59,10 @@ function clampItemCenter(centerX, centerY, width, height, rotationDeg, minX, min
 }
 
 const PRINT_CHARACTER_SCALE = 1.2
-const DEFAULT_PRINT_CHARACTER_SHIFT_LIMIT_X = 10
-const WATERGUN_PRINT_CHARACTER_SHIFT_LIMIT_X = 20
-const PRINT_CHARACTER_SHIFT_LIMIT_Y = 6
+const DEFAULT_PRINT_CHARACTER_SHIFT_LIMIT_X = 0
+const WATERGUN_PRINT_CHARACTER_SHIFT_LIMIT_X = 0
+const PRINT_CHARACTER_SHIFT_LIMIT_Y = 0
+const STRAWBERRY_PRINT_CHARACTER_SHIFT_Y = 30 // 딸기 착용 시에만 적용되는 고정 하향 보정(자동 중앙정렬과는 무관)
 
 function getPrintCharacterShiftLimitX(layout) {
   return layout.props.some((prop) => prop.id === 'item_watergun')
@@ -137,11 +138,13 @@ function getCharacterShift(layout, area, center, renderScale) {
     -shiftLimitX * renderScale,
     shiftLimitX * renderScale
   )
-  const shiftY = clamp(
-    clamp(desiredDy, allowedDyMin, allowedDyMax),
-    -PRINT_CHARACTER_SHIFT_LIMIT_Y * renderScale,
-    PRINT_CHARACTER_SHIFT_LIMIT_Y * renderScale
-  )
+  const shiftY = layout.costume?.id === 'strawberry'
+    ? STRAWBERRY_PRINT_CHARACTER_SHIFT_Y * renderScale
+    : clamp(
+      clamp(desiredDy, allowedDyMin, allowedDyMax),
+      -PRINT_CHARACTER_SHIFT_LIMIT_Y * renderScale,
+      PRINT_CHARACTER_SHIFT_LIMIT_Y * renderScale
+    )
 
   return { x: shiftX, y: shiftY }
 }

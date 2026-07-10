@@ -99,6 +99,7 @@ export function GameBoard() {
       ? (() => {
         const { w, h } = getCostumeDisplaySize(placedCostume, charScale)
         return {
+          id: placedCostume.id,
           image: placedCostume.image,
           width: w,
           height: h,
@@ -224,21 +225,21 @@ export function GameBoard() {
   }, [bgColor, bgImage, saving, getPrintLayout])
 
   return (
-    <div ref={boardRef} className={styles.board}
-      style={bgImage
-        ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'top center', backgroundRepeat: 'no-repeat' }
-        : { backgroundColor: bgColor ?? '#ffffff' }
-      }
-    >
+    <div ref={boardRef} className={styles.board}>
 
       {/* 코디 영역 로고 — 스테이지가 아니라 board 기준 좌측 상단 (화면 비율에 따라 스테이지가 좁아져도 위치 고정) */}
       <img src="/logo-1.png" alt="NEED MORE CASH — 2026 HBD CAFE"
         className={styles.boardLogo} draggable={false} />
 
-      {/* 스테이지 (5.5×8.5cm 포토카드 비율) — 배경은 화면 폭 전체에 깔고(.board), 스테이지 자체는 투명하게 유지 */}
+      {/* 스테이지 (5.5×8.5cm 포토카드 비율) — 배경은 스테이지 기준(너비 100%, 세로는 가운데 정렬)으로만
+          채움. board 전체(패널 포함)가 아니라 스테이지 높이만 기준으로 삼아야 배경 크롭/정렬이 의도대로 나옴 */}
       <div
         ref={stageRef}
         className={styles.stage}
+        style={bgImage
+          ? { backgroundImage: `url(${bgImage})`, backgroundSize: '100% auto', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat' }
+          : { backgroundColor: bgColor ?? '#ffffff' }
+        }
         onPointerMove={onStagePointerMove}
         onPointerUp={onStagePointerUp}
         onPointerLeave={onStagePointerUp}

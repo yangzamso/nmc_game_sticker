@@ -43,7 +43,7 @@ export const QUIZ_GROUPS = [
         type: 'choice',
         question: '다음 중 닛몰캐쉬가 커버한 댄스가 아닌 것은?',
         options: ['에이티즈 - BAD', '태양 - Live fast die slow', 'CORTIS - 영크크', 'BTS - 2.0'],
-        answerIndex: 3,
+        answerIndex: 2,
       },
     ],
   },

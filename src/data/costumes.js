@@ -25,8 +25,11 @@ export const BACKGROUNDS = [
   { id: 'bg_sky', label: '하늘', image: '/bg/bg-sky.jpg' },
   { id: 'bg_yellow', label: '노랑', image: '/bg/bg-yellow.jpg' },
   { id: 'bg_mint', label: '민트', image: '/bg/bg-mint.jpg' },
-  { id: 'bg_lavender', label: '라벤더', image: '/bg-lavender.jpg' },
-  { id: 'bg_pastel', label: '파스텔', image: '/bg/bg-pastel.jpg' },
+  { id: 'bg_lavender', label: '라벤더', image: '/bg/bg-lavender.jpg' },
+  { id: 'bg_cabinet', label: '캐비넷', image: '/bg/bg-cabinet.jpg' },
+  { id: 'bg_cartoon', label: '만화', image: '/bg/bg-cartoon.jpg' },
+  { id: 'bg_heart', label: '하트', image: '/bg/bg-cartoon-2.jpg' },
+  { id: 'bg_blue_check', label: '블루체크', image: '/bg/bg-blue.jpg' },
 ]
 
 export const SCALE = 0.5
