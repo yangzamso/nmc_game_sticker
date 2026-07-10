@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react'
 import styles from './CardFlipGame.module.css'
 
-// 3x4(12칸) 그리드라 6쌍 필요 — public/card/card-1.jpg ~ card-6.jpg
-const CARD_IMAGES = Array.from({ length: 6 }, (_, i) => `/card/card-${i + 1}.jpg`)
+// 3x4(12칸) 그리드라 6쌍 필요 — public/card/card-{그룹}-{순번}.jpg, 그룹 1~6 각 2장(변형).
+// 게임 시작마다 그룹당 1장씩만 랜덤으로 골라 6장을 확정하고, 그 6장으로 짝을 맞춤(같은 그룹에서 2장이 동시에 나오지 않음).
+const CARD_GROUPS = {
+  1: ['/card/card-1-1.jpg', '/card/card-1-2.jpg'],
+  2: ['/card/card-2-1.jpg', '/card/card-2-2.jpg'],
+  3: ['/card/card-3-1.jpg', '/card/card-3-2.jpg'],
+  4: ['/card/card-4-1.jpg', '/card/card-4-2.jpg'],
+  5: ['/card/card-5-1.jpg', '/card/card-5-2.jpg'],
+  6: ['/card/card-6-1.jpg', '/card/card-6-2.jpg'],
+}
 
 function shuffle(array) {
   const arr = [...array]
@@ -13,9 +21,13 @@ function shuffle(array) {
   return arr
 }
 
+function pickCardImages() {
+  return Object.values(CARD_GROUPS).map((variants) => variants[Math.floor(Math.random() * variants.length)])
+}
+
 function buildDeck() {
   return shuffle(
-    CARD_IMAGES.flatMap((image, i) => [
+    pickCardImages().flatMap((image, i) => [
       { key: `${i}-a`, image },
       { key: `${i}-b`, image },
     ])
@@ -27,6 +39,12 @@ export function CardFlipGame({ onClear }) {
   const [flipped, setFlipped] = useState([])
   const [matched, setMatched] = useState([])
   const [locked, setLocked] = useState(false)
+
+  // 카드를 뒤집는 순간 로딩이 시작되면 늦으므로, 이번 판에 실제로 뽑힌 6장만 미리 브라우저 캐시에 받아둠
+  useEffect(() => {
+    const uniqueImages = [...new Set(deck.map((c) => c.image))]
+    uniqueImages.forEach((src) => { const img = new Image(); img.src = src })
+  }, [deck])
 
   useEffect(() => {
     if (matched.length !== deck.length) return
