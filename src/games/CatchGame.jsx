@@ -2,10 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import { COSTUMES, CHARACTER_CROP, getCostumeDisplaySize } from '../data/costumes'
 import styles from './CatchGame.module.css'
 
-// 옷 5종 (꽝 없이 항상 옷이 나옴 — 룰렛과 달리 재도전은 "이미 보유"인 경우만 발생)
+// 옷 5종 (딸기 제외)
 const ITEMS = COSTUMES.filter((c) => c.id !== 'strawberry')
-const TICK_MS = 110 // 옷이 바뀌는 간격 (제자리에서 빠르게 순환)
+const TICK_MS = 180 // 옷이 바뀌는 간격 (제자리에서 빠르게 순환)
 const SETTLE_DELAY_MS = 800
+
+// 제시된 목표 옷일 때만 성공 — 아직 안 가진 옷(딸기 제외) 중에서만 목표로 뽑음
+function pickTarget(ownedIds) {
+  const pool = ITEMS.filter((c) => !ownedIds.includes(c.id))
+  const source = pool.length > 0 ? pool : ITEMS
+  return source[Math.floor(Math.random() * source.length)]
+}
 
 // 시작 시 "아저씨" 칸이 보이도록 초기값 고정
 const AJUSSI_INDEX = ITEMS.findIndex((c) => c.id === 'ajussi')
@@ -48,10 +55,10 @@ export function clampWornOffset(offset = {}) {
 }
 
 // 슬롯4 캐치캐치 — 캐릭터 위에 옷이 입혀진 채로 제자리에서 빠르게 순환 전환되고,
-// START로 시작해 STOP을 누르는 순간 그 시점에 캐릭터가 입고 있던 옷이 결과로 확정된다.
-// 재도전/보상 로직은 룰렛(슬롯3)과 유사하되 꽝이 없어, 이미 보유한 옷이면 재도전, 새 옷이면 캡슐 가챠로 확정.
-// 이미 클리어된 슬롯(재도전)은 정지 타이밍과 무관하게 항상 원래 옷으로 스냅되어 확정된다.
+// 진입 시 제시된 목표 옷(아직 안 가진 옷 중 랜덤)에 STOP으로 정확히 멈춰야 성공, 다른 옷에서 멈추면 재도전.
+// 이미 클리어된 슬롯(재도전)은 목표와 무관하게 정지 타이밍과 상관없이 항상 원래 옷으로 스냅되어 확정된다.
 export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
+  const [target] = useState(() => pickTarget(ownedIds))
   const [index, setIndex] = useState(AJUSSI_INDEX)
   const [swapKey, setSwapKey] = useState(0)
   const [started, setStarted] = useState(false)
@@ -100,10 +107,10 @@ export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
         onResult(alreadyCleared)
         return
       }
-      if (ownedIds.includes(landedId)) {
-        setRetryMsg('이미 보유한 옷이에요. 다시 도전해주세요.')
-      } else {
+      if (landedId === target.id) {
         onResult(landedId)
+      } else {
+        setRetryMsg('목표 옷이 아니에요. 다시 도전해주세요.')
       }
     }, SETTLE_DELAY_MS)
     timeoutsRef.current.push(t)
@@ -112,9 +119,18 @@ export function CatchGame({ ownedIds, alreadyCleared, onResult }) {
   const current = ITEMS[index]
   const currentSize = getCostumeDisplaySize(current, CHAR_SCALE)
   const { dx: wornDx = 0, dy: wornDy = 0 } = clampWornOffset(WORN_OFFSET[current.id])
+  const displayTarget = alreadyCleared ? ITEMS.find((c) => c.id === alreadyCleared) : target
 
   return (
     <div className={styles.catch}>
+      <div className={styles.targetRow}>
+        <span className={styles.targetLabel}>{alreadyCleared ? '이 게임은 클리어 했습니다.' : '이 옷에 멈춰보세요!'}</span>
+        <div className={styles.targetChip}>
+          <img src={displayTarget.image} alt={displayTarget.name} className={styles.targetImg} />
+          <span className={styles.targetName}>{displayTarget.name}</span>
+        </div>
+      </div>
+
       <div className={styles.stage}>
         <img src="/items/character_base.png" alt="닛몰캐쉬" className={styles.characterImg} draggable={false} />
         {started && (

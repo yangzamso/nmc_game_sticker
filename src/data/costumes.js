@@ -30,6 +30,7 @@ export const BACKGROUNDS = [
   { id: 'bg_cartoon', label: '만화', image: '/bg/bg-cartoon.jpg' },
   { id: 'bg_heart', label: '하트', image: '/bg/bg-heart.jpg' },
   { id: 'bg_blue_check', label: '블루체크', image: '/bg/bg-blue.jpg' },
+  { id: 'bg_curtain', label: '커튼', image: '/bg/bg-curtain.jpg' },
 ]
 
 export const SCALE = 0.5

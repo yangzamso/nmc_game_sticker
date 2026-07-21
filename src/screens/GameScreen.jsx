@@ -26,6 +26,7 @@ export function GameScreen() {
   const [showQuizFail, setShowQuizFail] = useState(false)
   const [showBubbleFail, setShowBubbleFail] = useState(false)
   const [cardDifficulty, setCardDifficulty] = useState('easy')
+  const [bubbleDifficulty, setBubbleDifficulty] = useState('easy')
 
   const slot = SLOTS.find((s) => s.id === activeSlotId)
 
@@ -134,7 +135,21 @@ export function GameScreen() {
       <div className={`${styles.screen} ${dusty.dustyBg}`}>
         <button className={styles.backBtn} onClick={backToHub}>← 이전으로</button>
         <h2 className={styles.title}>{slot.label}</h2>
-        <BubblePopGame onClear={handleGameClear} onFail={() => setShowBubbleFail(true)} />
+        <div className={styles.difficultyRow}>
+          <button
+            className={`${styles.testClearBtn} ${bubbleDifficulty === 'easy' ? '' : styles.difficultyInactive}`}
+            onClick={() => setBubbleDifficulty('easy')}
+          >
+            이지
+          </button>
+          <button
+            className={`${styles.testClearBtn} ${bubbleDifficulty === 'hard' ? '' : styles.difficultyInactive}`}
+            onClick={() => setBubbleDifficulty('hard')}
+          >
+            하드
+          </button>
+        </div>
+        <BubblePopGame key={bubbleDifficulty} difficulty={bubbleDifficulty} onClear={handleGameClear} onFail={() => setShowBubbleFail(true)} />
         {showBubbleFail && (
           <Modal title="시간 안에 다 못 찾았네요" onConfirm={() => setShowBubbleFail(false)}>
             다시 도전해주세요

@@ -11,11 +11,13 @@ const TIME_LIMIT_MS = 20000
 const SPAWN_INTERVAL_MS = 267 // 20초 ÷ 267ms ≈ 총 방울 75개 (70~80개 대비용 여유분)
 const BUBBLE_LIFETIME_MS = 3200 // 동시 체공 개수 ≈ LIFETIME/SPAWN_INTERVAL = 12개
 const TARGET_PROB = 0.4 // 목표 옷 방울이 나올 확률 (나머지 60%는 디코이 5종에 고르게 분배)
-const TARGET_CHANGE_COUNT = 0 // 제시 옷은 게임 중 바뀌지 않음(처음 뜬 목표 그대로 끝까지 유지)
-const TARGET_PHASE_MS = TIME_LIMIT_MS / (TARGET_CHANGE_COUNT + 1)
 
-function pickBubbleCostumeId(targetId) {
-  if (Math.random() < TARGET_PROB) return targetId
+// 하드 모드: 10초 시점에 제시 옷이 한 번 바뀌고, 동시에 목표 확률이 30%로 낮아짐(디코이 비중 증가)
+const HARD_PHASE_START_MS = 10000
+const HARD_TARGET_PROB = 0.3
+
+function pickBubbleCostumeId(targetId, prob) {
+  if (Math.random() < prob) return targetId
   const decoys = BUBBLE_ITEMS.filter((c) => c.id !== targetId)
   return decoys[Math.floor(Math.random() * decoys.length)].id
 }
@@ -27,7 +29,7 @@ function randomTarget() {
 // 슬롯5 방울 터트리기 — 제시된 옷 방울만 골라 터뜨려 제한시간(20초) 안에 목표 개수(GOAL)를 채우면 클리어.
 // 디코이(목표가 아닌 나머지 옷) 방울을 터뜨리면 -1 페널티(0 밑으로는 안 내려감).
 // 실패해도(시간 내 미달성) 진행 자체는 막히지 않고, 퀴즈(슬롯2)와 동일하게 재도전 안내 후 바로 재시작 가능.
-export function BubblePopGame({ onClear, onFail }) {
+export function BubblePopGame({ difficulty = 'easy', onClear, onFail }) {
   const [target, setTarget] = useState(randomTarget)
   const [targetChangeKey, setTargetChangeKey] = useState(0) // 바뀔 때마다 증가 — 제시 칩 등장 애니메이션 재생용
   const [phase, setPhase] = useState('ready') // 'ready' | 'playing' | 'done'
@@ -44,6 +46,7 @@ export function BubblePopGame({ onClear, onFail }) {
   const hitsRef = useRef(0)
   const targetIdRef = useRef(target.id)
   const nextIdRef = useRef(0)
+  const targetProbRef = useRef(TARGET_PROB)
 
   useEffect(() => () => {
     clearInterval(spawnIntervalRef.current)
@@ -59,7 +62,7 @@ export function BubblePopGame({ onClear, onFail }) {
 
   function spawnBubble() {
     const id = nextIdRef.current++
-    const costumeId = pickBubbleCostumeId(targetIdRef.current)
+    const costumeId = pickBubbleCostumeId(targetIdRef.current, targetProbRef.current)
     const x = 8 + Math.random() * 78 // 8%~86% (버블 자체 너비만큼 오른쪽 여유를 둠)
     setBubbles((prev) => [...prev, { id, costumeId, x }])
     const t = setTimeout(() => removeBubble(id), BUBBLE_LIFETIME_MS)
@@ -105,10 +108,15 @@ export function BubblePopGame({ onClear, onFail }) {
     setPhase('playing')
     deadlineRef.current = Date.now() + TIME_LIMIT_MS
     setTimeLeftMs(TIME_LIMIT_MS)
+    targetProbRef.current = TARGET_PROB
 
-    rotateTimeoutsRef.current = Array.from({ length: TARGET_CHANGE_COUNT }, (_, i) =>
-      setTimeout(rotateTarget, TARGET_PHASE_MS * (i + 1))
-    )
+    // 하드 모드: 10초 시점에 제시 옷 교체 + 목표 확률 하락. 이지 모드는 기존과 동일(끝까지 유지)
+    rotateTimeoutsRef.current = difficulty === 'hard'
+      ? [setTimeout(() => {
+          rotateTarget()
+          targetProbRef.current = HARD_TARGET_PROB
+        }, HARD_PHASE_START_MS)]
+      : []
 
     spawnIntervalRef.current = setInterval(spawnBubble, SPAWN_INTERVAL_MS)
     tickIntervalRef.current = setInterval(() => {
